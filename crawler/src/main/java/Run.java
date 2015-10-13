@@ -1,13 +1,6 @@
-import com.test.business.CategoryManagementRemoteBean;
-import com.test.dto.CategoryTreeDTO;
 import com.test.impl.BatDongSanServiceImpl;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import java.util.List;
-import java.util.Properties;
 
 /**
  * Created with IntelliJ IDEA.
