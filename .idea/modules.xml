@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/HomeLand.iml" filepath="$PROJECT_DIR$/HomeLand.iml" />
+      <module fileurl="file://$PROJECT_DIR$/business/business-module.iml" filepath="$PROJECT_DIR$/business/business-module.iml" />
+      <module fileurl="file://$PROJECT_DIR$/common/common.iml" filepath="$PROJECT_DIR$/common/common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/common/common-module.iml" filepath="$PROJECT_DIR$/common/common-module.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ejb/core-module.iml" filepath="$PROJECT_DIR$/ejb/core-module.iml" />
+      <module fileurl="file://$PROJECT_DIR$/crawler/crawler.iml" filepath="$PROJECT_DIR$/crawler/crawler.iml" />
+      <module fileurl="file://$PROJECT_DIR$/crawler/crawler-module.iml" filepath="$PROJECT_DIR$/crawler/crawler-module.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ear/ear-essembly.iml" filepath="$PROJECT_DIR$/ear/ear-essembly.iml" />
+      <module fileurl="file://$PROJECT_DIR$/web/web-module.iml" filepath="$PROJECT_DIR$/web/web-module.iml" />
+    </modules>
+  </component>
+</project>
+

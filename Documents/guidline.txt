@@ -1,0 +1,53 @@
+1. standalone:
+
+    <datasource jndi-name="java:jboss/datasources/MySqlDS" pool-name="MYDS" enabled="true" use-java-context="true">
+        <connection-url>jdbc:mysql://localhost:3306/learning</connection-url>
+        <driver-class>com.mysql.jdbc.Driver</driver-class>
+        <driver>mysql</driver>
+        <security>
+            <user-name>root</user-name>
+            <password>123456</password>
+        </security>
+    </datasource>
+
+    <drivers>
+        <driver name="mysql" module="com.mysql">
+            <xa-datasource-class>com.mysql.jdbc.jdbc2.optional.MysqlXADataSource</xa-datasource-class>
+        </driver>
+    </drivers>
+
+2. tao module com.mysql cho driver "mysql"
+    + tao thu muc com/mysql/main trong modules cua jboss
+    + download driver chep file java vao thu muc main
+    + tao file module.xml voi noi dung:
+        <?xml version="1.0" encoding="UTF-8"?>
+        <module xmlns="urn:jboss:module:1.0" name="com.mysql">
+          <resources>
+            <resource-root path="mysql-connector-java-5.1.31-bin.jar"/>
+          </resources>
+          <dependencies>
+            <module name="javax.api"/>
+            <module name="javax.transaction.api"/>
+          </dependencies>
+        </module>
+
+3. de deploy o context root
+    + <virtual-server name="default-host" enable-welcome-root="false">
+        <alias name="localhost"/>
+        <alias name="example.com"/>
+       </virtual-server>
+
+    + thay enable-welcome-root="true" -> enable-welcome-root="false"
+
+4. decorator template
+    + add repository: sitemesh
+    + add sitemesh filter trong web.xml
+    + tao thu muc decorators trong webapp de chua file layout
+
+5. them resource bundle
+    + Them bean: messageSource trong dispatcher-servlet.xml
+    + Tao file dua vao(basename) trong thu muc resources
+6. Them user cho jboss de goi remote interface
+    + https://docs.jboss.org/author/display/AS71/EJB+invocations+from+a+remote+server+instance
+    + $JBOSS-HOME/bin/add-user.sh
+    + sua lai trong file jobss-ejb-client.properties

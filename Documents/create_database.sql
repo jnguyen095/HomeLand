@@ -1,0 +1,19 @@
+CREATE DATABASE homeland
+DEFAULT CHARACTER SET utf8
+DEFAULT COLLATE utf8_general_ci;
+
+use homeland;
+
+DROP TABLE IF EXISTS Category;
+CREATE TABLE Category
+(
+	CategoryID INT NOT NULL AUTO_INCREMENT,
+	ParentID INT,
+	CatName VARCHAR(255) NOT NULL,
+	Url VARCHAR(255),
+	Active int(1) NOT NULL default 1,
+
+	PRIMARY KEY(CategoryID),
+	INDEX (ParentID),
+	FOREIGN KEY(ParentID) REFERENCES Category(CategoryID) ON UPDATE CASCADE ON DELETE RESTRICT
+);

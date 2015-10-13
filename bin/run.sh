@@ -1,0 +1,1 @@
+mvn install:install-file -DgroupId=weblogic -DartifactId=webservices -Dversion=10.3.6  -Dpackaging=jar -Dfile=webservices.jar
