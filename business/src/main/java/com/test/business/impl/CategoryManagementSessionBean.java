@@ -10,6 +10,7 @@ import com.test.session.CategoryLocalBean;
 import com.test.utils.DozerSingletonMapper;
 
 import javax.ejb.EJB;
+import javax.ejb.ObjectNotFoundException;
 import javax.ejb.Stateless;
 import java.util.List;
 
@@ -32,14 +33,28 @@ public class CategoryManagementSessionBean implements CategoryManagementLocalBea
             for(CategoryTreeDTO tree : trees){
                 CategoryDTO rootDTO = tree.getRoot();
                 List<CategoryDTO> childDTO = tree.getNodes();
-                CategoryEntity rootEntity = DozerSingletonMapper.getInstance().map(rootDTO, CategoryEntity.class);
-                rootEntity.setActive(Constants.ACTIVE);
-                rootEntity = categoryLocalBean.save(rootEntity);
+                CategoryEntity rootEntity = null;
+                try{
+                    rootEntity = categoryLocalBean.findEqualUnique("name", rootDTO.getName());
+                }catch (ObjectNotFoundException e){}
+
+                if(rootEntity == null || rootEntity.getCategoryId() < 1){
+                    rootEntity = DozerSingletonMapper.getInstance().map(rootDTO, CategoryEntity.class);
+                    rootEntity.setActive(Constants.ACTIVE);
+                    rootEntity = categoryLocalBean.save(rootEntity);
+                }
                 for(CategoryDTO child : childDTO){
-                    CategoryEntity childEntity = DozerSingletonMapper.getInstance().map(child, CategoryEntity.class);
-                    childEntity.setParent(rootEntity);
-                    childEntity.setActive(Constants.ACTIVE);
-                    categoryLocalBean.save(childEntity);
+                    CategoryEntity childEntity = null;
+                    try{
+                        childEntity = categoryLocalBean.findEqualUnique("name", child.getName());
+                    }catch (ObjectNotFoundException e){}
+
+                    if(childEntity == null || childEntity.getCategoryId() < 1){
+                        childEntity = DozerSingletonMapper.getInstance().map(child, CategoryEntity.class);
+                        childEntity.setParent(rootEntity);
+                        childEntity.setActive(Constants.ACTIVE);
+                        categoryLocalBean.save(childEntity);
+                    }
                 }
             }
         }catch (Exception e){

@@ -14,5 +14,4 @@ import java.util.List;
  */
 @Local
 public interface CategoryManagementLocalBean {
-    void updateMainCategory(List<CategoryTreeDTO> trees);
 }
