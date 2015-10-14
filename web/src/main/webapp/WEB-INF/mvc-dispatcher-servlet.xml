@@ -8,6 +8,7 @@
     <context:component-scan base-package="com.test.controller"/>
 
     <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="requestContextAttribute" value="rc"/>
         <property name="prefix" value="/WEB-INF/pages/"/>
         <property name="suffix" value=".jsp"/>
     </bean>

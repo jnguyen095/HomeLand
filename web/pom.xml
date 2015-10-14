@@ -33,7 +33,6 @@
             <groupId>${parent.groupId}</groupId>
             <artifactId>common-module</artifactId>
             <version>${parent.version}</version>
-            <scope>provided</scope>
         </dependency>
 
         <dependency>
@@ -87,12 +86,17 @@
             <version>2.4.2</version>
         </dependency>
 
-
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.8.2</version>
             <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>jstl</groupId>
+            <artifactId>jstl</artifactId>
+            <version>${jstl.version}</version>
         </dependency>
     </dependencies>
 
@@ -126,5 +130,11 @@
                 </executions>
             </plugin>
         </plugins>
+        <testResources>
+            <testResource>
+                <directory>src/test/resources</directory>
+                <filtering>true</filtering>
+            </testResource>
+        </testResources>
     </build>
 </project>

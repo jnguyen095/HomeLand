@@ -12,7 +12,9 @@ import com.test.utils.DozerSingletonMapper;
 import javax.ejb.EJB;
 import javax.ejb.ObjectNotFoundException;
 import javax.ejb.Stateless;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -60,5 +62,19 @@ public class CategoryManagementSessionBean implements CategoryManagementLocalBea
         }catch (Exception e){
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public Object[] searchByProperties(Map<String, Object> properties, String sortExpression, String sortDirection, int firstItem, int maxPageItems) {
+        Object[] objs = categoryLocalBean.searchByProperties(properties, sortExpression, sortDirection, firstItem, maxPageItems);
+        List<CategoryEntity> listEntities = (List<CategoryEntity>)objs[1];
+        List<CategoryDTO> listDTOs = new ArrayList<CategoryDTO>();
+        for(CategoryEntity entity : listEntities){
+            listDTOs.add(DozerSingletonMapper.getInstance().map(entity, CategoryDTO.class));
+        }
+        Object[] result = new Object[2];
+        result[0] = objs[0];
+        result[1] = listDTOs;
+        return result;
     }
 }

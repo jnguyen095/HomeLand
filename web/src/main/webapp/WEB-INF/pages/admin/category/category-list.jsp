@@ -1,17 +1,39 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: nkhang
-  Date: 7/17/15
-  Time: 10:28 PM
-  To change this template use File | Settings | File Templates.
---%>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ include file="/common/taglibs.jsp" %>
 <html>
 <head>
     <title><fmt:message key="admin.category.title"/> </title>
 </head>
 <body>
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">Category</div>
+                <div class="panel-body">
+                    <div class="dataTable_wrapper">
+                        <div class="row">
+                            <c:url var="formUrl" value="/admin/category/list.html"/>
+                            <form:form action="${formUrl}" commandName="items" role="form" id="brandForm" cssClass="form-horizontal">
+                                <display:table name="items.listResult" cellspacing="0" cellpadding="0" requestURI="${formUrl}"
+                                               partialList="true" sort="external" size="${items.totalItems}" defaultsort="-1"
+                                               id="tableList" excludedParams="checkList"
+                                               pagesize="${items.maxPageItems}" export="false" class="table table-striped table-bordered table-hover dataTable no-footer">
+                                    <display:column headerClass="table_header sorting" property="name" sortName="code" sortable="true" titleKey="category.name" />
+                                    <display:column headerClass="table_header sorting" property="url" sortName="name" sortable="true" titleKey="category.url" />
 
+                                    <display:column headerClass="col-actions" class="col-actions" titleKey="label.action">
+                                        <a class="addEditBrand" brandId="${tableList.categoryId}"> <i class="fa fa-edit"></i></a>
+                                    </display:column>
+
+                                    <display:setProperty name="paging.banner.item_name" value="category"/>
+                                    <display:setProperty name="paging.banner.items_name" value="categories"/>
+                                </display:table>
+                            </form:form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

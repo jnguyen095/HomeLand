@@ -14,4 +14,6 @@ public class Constants {
     public static final String ALPHABET_SEARCH_PREFIX = "^$^";
     public static final int ACTIVE = 1;
     public static final int INACTIVE = 0;
+    public static final String LIST_MODEL_KEY = "items";
+    public static final String FORM_MODEL_KEY = "item";
 }

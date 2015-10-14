@@ -15,7 +15,12 @@
         <version.ejb.plugin>2.3</version.ejb.plugin>
         <version.surefire.plugin>2.10</version.surefire.plugin>
         <version.ear.plugin>2.8</version.ear.plugin>
-        <spring.version>3.2.4.RELEASE</spring.version>
+        <spring.version>4.1.7.RELEASE</spring.version>
+        <jsp.version>2.1</jsp.version>
+        <servlet.version>2.5</servlet.version>
+        <displaytag.version>1.2</displaytag.version>
+        <jstl.version>1.2</jstl.version>
+        <version.java>1.7</version.java>
     </properties>
 
   <dependencies>

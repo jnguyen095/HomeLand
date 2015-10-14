@@ -13,7 +13,6 @@ public class Run {
     public static void main(String[] args){
         ApplicationContext context = new ClassPathXmlApplicationContext("services.xml");
         BatDongSanServiceImpl batDongSanService = (BatDongSanServiceImpl)context.getBean("batDongSanService");
-        //CategoryManagementRemoteBean categoryManagementRemoteBean = (CategoryManagementRemoteBean)context.getBean("categoryManagementRemoteBean");
         try{
             //batDongSanService.crawler();
             batDongSanService.updateMainCategory();

@@ -4,6 +4,7 @@ import com.test.dto.CategoryTreeDTO;
 
 import javax.ejb.Local;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -14,4 +15,5 @@ import java.util.List;
  */
 @Local
 public interface CategoryManagementLocalBean {
+    Object[] searchByProperties(Map<String,Object> properties, String sortExpression, String sortDirection, int firstItem, int maxPageItems);
 }
