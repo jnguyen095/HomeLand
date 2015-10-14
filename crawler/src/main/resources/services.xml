@@ -7,7 +7,7 @@
 
         http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee.xsd">
 
-    <jee:remote-slsb jndi-name="ejb:ear-essembly-1.0/business-module-1.0/CategoryManagementSessionEJB!com.test.business.CategoryManagementRemoteBean"
+    <jee:remote-slsb jndi-name="ejb:HomeLand/business-module-1.0/CategoryManagementSessionEJB!com.test.business.CategoryManagementRemoteBean"
                      business-interface="com.test.business.CategoryManagementRemoteBean"
                      id="categoryManagementRemoteBean" environment-ref="jndiProperties"
                      cache-home="true" lookup-home-on-startup="false" refresh-home-on-connect-failure="true">

@@ -178,6 +178,46 @@ public class BatDongSanDTO {
         this.images = images;
     }
 
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getToilet() {
+        return toilet;
+    }
+
+    public void setToilet(String toilet) {
+        this.toilet = toilet;
+    }
+
+    public String getContactMobile() {
+        return contactMobile;
+    }
+
+    public void setContactMobile(String contactMobile) {
+        this.contactMobile = contactMobile;
+    }
+
+    public String getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(String longitude) {
+        this.longitude = longitude;
+    }
+
+    public String getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(String latitude) {
+        this.latitude = latitude;
+    }
+
     private List<String> images;
     private String postDate;
     private String expireDate;
@@ -195,9 +235,16 @@ public class BatDongSanDTO {
     private String room;
     private String widthSize;
     private String longSize;
+    private String type;
+    private String toilet;
+    private String longitude;
+    private String latitude;
+
+
     private String contactName;
     private String contactPhone;
     private String contactAddress;
     private String contactEmail;
+    private String contactMobile;
 
 }

@@ -14,8 +14,8 @@ public class Run {
         ApplicationContext context = new ClassPathXmlApplicationContext("services.xml");
         BatDongSanServiceImpl batDongSanService = (BatDongSanServiceImpl)context.getBean("batDongSanService");
         try{
-            //batDongSanService.crawler();
-            batDongSanService.updateMainCategory();
+            batDongSanService.crawler();
+            //batDongSanService.updateMainCategory();
         }catch (Exception e){
             e.printStackTrace();
         }

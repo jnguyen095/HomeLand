@@ -31,6 +31,7 @@ import java.util.logging.Logger;
 public class BatDongSanServiceImpl implements BatDongSanService {
 
     private Logger logger = Logger.getLogger(this.getClass().getName());
+    static final String SOURCE_URL = "http://batdongsan.com.vn";
 
     public void setCategoryManagementBean(CategoryManagementRemoteBean categoryManagementBean) {
         this.categoryManagementBean = categoryManagementBean;
@@ -46,18 +47,9 @@ public class BatDongSanServiceImpl implements BatDongSanService {
         for(int i = 1; i < 2; i++){
             testUrl = "http://batdongsan.com.vn/ban-nha-rieng-tp-hcm" + (i > 1 ? "/p" + i : "");
             List<BatDongSanDTO> items = getBrief(testUrl);
-            //System.out.println(testUrl + " : " + items.size());
             listItems.addAll(items);
         }
-        for(BatDongSanDTO bds : listItems){
-            System.out.println(">>>>>>>>>>>>>>");
-            System.out.println(bds.getHref());
-            System.out.println(bds.getArea());
-            System.out.println(bds.getCityDist());
-            System.out.println(bds.getPrice());
-            System.out.println(bds.getDetail());
-            System.out.println(bds.getImages().size());
-        }
+
     }
 
     @Override
@@ -76,7 +68,7 @@ public class BatDongSanServiceImpl implements BatDongSanService {
                         CategoryDTO root = new CategoryDTO();
                         String text = aElm.get(0).text();
                         String url = aElm.get(0).attr("href");
-                        root.setUrl(url);
+                        root.setUrl(fullUrl + url);
                         root.setName(text);
                         tree.setRoot(root);
 
@@ -88,7 +80,7 @@ public class BatDongSanServiceImpl implements BatDongSanService {
                                 String ctext = a1Elm.get(0).text();
                                 String curl = a1Elm.get(0).attr("href");
                                 children.setName(ctext);
-                                children.setUrl(curl);
+                                children.setUrl(fullUrl + curl);
                                 if(tree.getNodes() == null){
                                     tree.setNodes(new ArrayList<CategoryDTO>());
                                 }
@@ -107,73 +99,58 @@ public class BatDongSanServiceImpl implements BatDongSanService {
         }
     }
 
-    private void getLastTextNode(Node node, Node parent){
-        List<Node> nodes = node.childNodes();
-        if(nodes != null && nodes.size() > 0){
-            for(Node aNode : nodes){
-                getLastTextNode(aNode, node);
-            }
-        }else{
-            TextNode textNode =(TextNode)node;
-            CategoryDTO categoryDTO = new CategoryDTO();
-            categoryDTO.setName(textNode.text());
-            logger.info(textNode.text());
-        }
-    }
-
-    private void updateDetail(String url, BatDongSanDTO dto) throws Exception{
-        String fullUrl = "http://batdongsan.com.vn" + url;
+    private void updateDetail(String fullUrl, BatDongSanDTO dto) throws Exception{
         Document doc = Jsoup.connect(fullUrl).userAgent(Constants.userAgent).get();
         String detail = doc.getElementById("product-detail").select("div.pm-content").html();
-        String contactName = doc.getElementById("LeftMainContent__productDetail_contactName").select("div.right").text().trim();
-        String contactPhone = doc.getElementById("LeftMainContent__productDetail_contactMobile").select("div.right").text().trim();
-        try{
-            String room = doc.getElementById("LeftMainContent__productDetail_roomNumber").select("div.right").text();
-            dto.setRoom(room);
-        }catch (Exception e){}
 
-        try{
-            String floor = doc.getElementById("LeftMainContent__productDetail_floor").select("div.right").text().split(" ")[0];
-            dto.setFloor(floor);
-        }catch (Exception e){}
-        try{
-            String widthSize = doc.getElementById("LeftMainContent__productDetail_frontEnd").select("div.right").text().split(" ")[0];
-            dto.setWidthSize(widthSize);
-        }catch (Exception e){}
+        Elements divDacDiemBatDongSan = doc.getElementsByClass("pm-content-detail").select("div.left-detail").select(" > div");
+        //logger.info("------- DAC DIEM ----------");
+        for(Element dacDiem : divDacDiemBatDongSan){
+            String key = dacDiem.select("div.left").text().trim();
+            String value = dacDiem.select("div.right").text();
+            //logger.info("[" + key + ": " + value + "]");
 
-        Elements elements = doc.getElementsByClass("pm-content-detail").select("div.left-detail").select("div");//.select("div");
-        for(Element element : elements){
-            try{
-                if(element.select("div.left").text().trim().equals("Mã số")){
-                    dto.setCode(element.select("div.right").text().trim());
-                }
-            }catch (Exception e){}
-            try{
-                if(element.select("div.left").text().trim().equals("Địa chỉ")){
-                    dto.setAddress(element.select("div.right").text().trim());
-                }
-            }catch (Exception e){}
-            try{
-                if(element.select("div.left").text().trim().equals("Ngày đăng tin")){
-                    dto.setPostDate(element.select("div.right").text().trim());
-                }
-            }catch (Exception e){}
-            try{
-                if(element.select("div.left").text().trim().equals("Ngày hết hạn")){
-                    dto.setExpireDate(element.select("div.right").text().trim());
-                }
-            }catch (Exception e){}
+            switch (key){
+                case "Địa chỉ": dto.setAddress(value);break;
+                case "Mã số": dto.setCode(value);break;
+                case "Loại tin rao": dto.setType(value);break;
+                case "Ngày đăng tin": dto.setPostDate(value);break;
+                case "Ngày hết hạn": dto.setExpireDate(value);break;
+                case "Số phòng ngủ": dto.setRoom(value);break;
+                case "Số toilet": dto.setToilet(value);break;
+                default:
+            }
         }
+
+        //logger.info("------- LIEN HE ----------");
+        Elements divLienHe = doc.getElementById("divCustomerInfo").select("div.right-content");
+        for(Element lienHe : divLienHe){
+            String key = lienHe.select("div.left").text().trim();
+            String value = lienHe.select("div.right").text();
+            //logger.info("[" + key + ": " + value + "]");
+            switch (key){
+                case "Tên liên lạc": dto.setContactName(value);break;
+                case "Địa chỉ": dto.setContactAddress(value);break;
+                case "Điện thoại": dto.setContactPhone(value);break;
+                case "Mobile": dto.setContactMobile(value);break;
+                case "Email": dto.setContactEmail(value);break;
+                default:
+            }
+        }
+
         Elements imageElements = doc.getElementById("product-detail").select("div.list-img").select("ul").select("li").select("img");
         List<String> images = new ArrayList<String>();
         for(Element imageElement: imageElements){
             images.add(imageElement.attr("src"));
         }
 
+        String latitude = doc.getElementById("hdLat").attr("value");
+        String longitude = doc.getElementById("hdLong").attr("value");
+
+        dto.setLongitude(longitude);
+        dto.setLatitude(latitude);
         dto.setImages(images);
         dto.setDetail(detail);
-        dto.setContactName(contactName);
-        dto.setContactPhone(contactPhone);
     }
 
     private List<BatDongSanDTO> getBrief(String url){
@@ -193,14 +170,14 @@ public class BatDongSanServiceImpl implements BatDongSanService {
 
                 BatDongSanDTO batDongSanDTO = new BatDongSanDTO();
                 batDongSanDTO.setTitle(pTitle);
-                batDongSanDTO.setHref(href);
+                batDongSanDTO.setHref(SOURCE_URL + href);
                 batDongSanDTO.setThumb(pThumb);
                 batDongSanDTO.setPrice(pPrice);
                 batDongSanDTO.setArea(pArea);
                 batDongSanDTO.setCityDist(cityDist);
                 batDongSanDTO.setBrief(brief);
                 try{
-                    updateDetail(href, batDongSanDTO);
+                    updateDetail(SOURCE_URL + href, batDongSanDTO);
                 }catch (Exception e){
                     continue;
                 }

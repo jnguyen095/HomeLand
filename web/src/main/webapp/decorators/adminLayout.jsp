@@ -265,7 +265,7 @@
                         <a href="#"><i class="fa fa-bar-chart-o fa-fw"></i> Admin<span class="fa arrow"></span></a>
                         <ul class="nav nav-second-level">
                             <li>
-                                <a href="<c:url value="/admin/category/edit.html"/>"><fmt:message key="category.title"/></a>
+                                <a href="<c:url value="/admin/category/list.html"/>"><fmt:message key="category.title"/></a>
                             </li>
                         </ul>
                         <!-- /.nav-second-level -->
