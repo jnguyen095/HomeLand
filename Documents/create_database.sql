@@ -12,7 +12,7 @@ CREATE TABLE Category
 	CatName VARCHAR(255) NOT NULL,
 	Url VARCHAR(255),
 	Active int(1) NOT NULL default 1,
-  Crawled int(1),
+  Crawled int(1) NOT NULL default 0,
 
 	PRIMARY KEY(CategoryID),
 	INDEX (ParentID),
