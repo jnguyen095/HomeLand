@@ -15,6 +15,7 @@ public class CategoryDTO implements Serializable{
     private String url;
     private Integer active;
     private CategoryDTO parent;
+    private Integer crawled;
 
     public CategoryDTO getParent() {
         return parent;
@@ -54,5 +55,13 @@ public class CategoryDTO implements Serializable{
 
     public void setActive(Integer active) {
         this.active = active;
+    }
+
+    public Integer getCrawled() {
+        return crawled;
+    }
+
+    public void setCrawled(Integer crawled) {
+        this.crawled = crawled;
     }
 }

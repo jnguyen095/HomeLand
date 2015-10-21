@@ -43,6 +43,7 @@ public class CategoryManagementSessionBean implements CategoryManagementLocalBea
                 if(rootEntity == null || rootEntity.getCategoryId() < 1){
                     rootEntity = DozerSingletonMapper.getInstance().map(rootDTO, CategoryEntity.class);
                     rootEntity.setActive(Constants.ACTIVE);
+                    rootEntity.setCrawled(Constants.CRAWLER_NOT_YET);
                     rootEntity = categoryLocalBean.save(rootEntity);
                 }
                 for(CategoryDTO child : childDTO){
@@ -55,6 +56,7 @@ public class CategoryManagementSessionBean implements CategoryManagementLocalBea
                         childEntity = DozerSingletonMapper.getInstance().map(child, CategoryEntity.class);
                         childEntity.setParent(rootEntity);
                         childEntity.setActive(Constants.ACTIVE);
+                        childEntity.setCrawled(Constants.CRAWLER_NOT_YET);
                         categoryLocalBean.save(childEntity);
                     }
                 }
@@ -62,6 +64,29 @@ public class CategoryManagementSessionBean implements CategoryManagementLocalBea
         }catch (Exception e){
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public List<CategoryDTO> findAll(Boolean continueLastCrawler) {
+        List<CategoryEntity> categoryEntities = null;
+        if(continueLastCrawler){
+            categoryEntities = categoryLocalBean.findLastCrawler();
+        }
+        if(categoryEntities == null || categoryEntities.size() < 1){
+            categoryLocalBean.updateCrawlerStatus(Constants.CRAWLER_NOT_YET);
+            categoryEntities = categoryLocalBean.findAll();
+        }
+        List<CategoryDTO> dtos = new ArrayList<>();
+        for(CategoryEntity entity : categoryEntities){
+            CategoryDTO dto = DozerSingletonMapper.getInstance().map(entity, CategoryDTO.class);
+            dtos.add(dto);
+        }
+        return dtos;
+    }
+
+    @Override
+    public void updateCrawlerStatus(Integer categoryId, int status) {
+        categoryLocalBean.updateCrawlerStatus4Category(categoryId, status);
     }
 
     @Override

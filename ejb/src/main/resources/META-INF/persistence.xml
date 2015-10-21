@@ -4,6 +4,15 @@
     <persistence-unit name="core-data" transaction-type="JTA">
         <jta-data-source>java:jboss/datasources/MySqlDS</jta-data-source>
         <class>com.test.domain.CategoryEntity</class>
+        <class>com.test.domain.BrandEntity</class>
+        <class>com.test.domain.CityEntity</class>
+        <class>com.test.domain.DirectionEntity</class>
+        <class>com.test.domain.DistrictEntity</class>
+        <class>com.test.domain.ProductEntity</class>
+        <class>com.test.domain.ProductAssetEntity</class>
+        <class>com.test.domain.StreetEntity</class>
+        <class>com.test.domain.WardEntity</class>
+        <class>com.test.domain.CrawlerHistoryEntity</class>
 
 
         <exclude-unlisted-classes>true</exclude-unlisted-classes>

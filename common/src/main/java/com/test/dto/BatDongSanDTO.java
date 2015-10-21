@@ -1,5 +1,6 @@
 package com.test.dto;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -9,7 +10,57 @@ import java.util.List;
  * Time: 10:53 PM
  * To change this template use File | Settings | File Templates.
  */
-public class BatDongSanDTO {
+public class BatDongSanDTO implements Serializable {
+
+    private List<String> images;
+    private String postDateStr;
+    private String expireDateStr;
+    private String brief;
+    private String detail;
+    private String code;
+    private String title;
+    private String href;
+    private String priceString;
+    private String area;
+    private String cityDist;
+    private String thumb;
+    private String address;
+    private String floor;
+    private String room;
+    private String widthSize;
+    private String longSize;
+    private String group;
+    private String toilet;
+    private String longitude;
+    private String latitude;
+    private String directionString;
+    private String brandString;
+    private String wardString;
+    private String streetString;
+
+
+    private String contactName;
+    private String contactPhone;
+    private String contactAddress;
+    private String contactEmail;
+    private String contactMobile;
+
+    public String getWardString() {
+        return wardString;
+    }
+
+    public void setWardString(String wardString) {
+        this.wardString = wardString;
+    }
+
+    public String getStreetString() {
+        return streetString;
+    }
+
+    public void setStreetString(String streetString) {
+        this.streetString = streetString;
+    }
+
     public String getTitle() {
         return title;
     }
@@ -26,12 +77,12 @@ public class BatDongSanDTO {
         this.href = href;
     }
 
-    public String getPrice() {
-        return price;
+    public String getPriceString() {
+        return priceString;
     }
 
-    public void setPrice(String price) {
-        this.price = price;
+    public void setPriceString(String priceString) {
+        this.priceString = priceString;
     }
 
     public String getArea() {
@@ -154,20 +205,20 @@ public class BatDongSanDTO {
         this.contactEmail = contactEmail;
     }
 
-    public String getPostDate() {
-        return postDate;
+    public String getPostDateStr() {
+        return postDateStr;
     }
 
-    public void setPostDate(String postDate) {
-        this.postDate = postDate;
+    public void setPostDateStr(String postDateStr) {
+        this.postDateStr = postDateStr;
     }
 
-    public String getExpireDate() {
-        return expireDate;
+    public String getExpireDateStr() {
+        return expireDateStr;
     }
 
-    public void setExpireDate(String expireDate) {
-        this.expireDate = expireDate;
+    public void setExpireDateStr(String expireDateStr) {
+        this.expireDateStr = expireDateStr;
     }
 
     public List<String> getImages() {
@@ -178,12 +229,12 @@ public class BatDongSanDTO {
         this.images = images;
     }
 
-    public String getType() {
-        return type;
+    public String getGroup() {
+        return group;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setGroup(String group) {
+        this.group = group;
     }
 
     public String getToilet() {
@@ -217,34 +268,19 @@ public class BatDongSanDTO {
     public void setLatitude(String latitude) {
         this.latitude = latitude;
     }
+    public String getDirectionString() {
+        return directionString;
+    }
 
-    private List<String> images;
-    private String postDate;
-    private String expireDate;
-    private String brief;
-    private String detail;
-    private String code;
-    private String title;
-    private String href;
-    private String price;
-    private String area;
-    private String cityDist;
-    private String thumb;
-    private String address;
-    private String floor;
-    private String room;
-    private String widthSize;
-    private String longSize;
-    private String type;
-    private String toilet;
-    private String longitude;
-    private String latitude;
+    public void setDirectionString(String directionString) {
+        this.directionString = directionString;
+    }
 
+    public String getBrandString() {
+        return brandString;
+    }
 
-    private String contactName;
-    private String contactPhone;
-    private String contactAddress;
-    private String contactEmail;
-    private String contactMobile;
-
+    public void setBrandString(String brandString) {
+        this.brandString = brandString;
+    }
 }

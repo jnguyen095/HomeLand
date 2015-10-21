@@ -12,6 +12,11 @@
                      id="categoryManagementRemoteBean" environment-ref="jndiProperties"
                      cache-home="true" lookup-home-on-startup="false" refresh-home-on-connect-failure="true">
     </jee:remote-slsb>
+    <jee:remote-slsb jndi-name="ejb:HomeLand/business-module-1.0/ProductManagementSessionEJB!com.test.business.ProductManagementRemoteBean"
+                     business-interface="com.test.business.ProductManagementRemoteBean"
+                     id="productManagementRemoteBean" environment-ref="jndiProperties"
+                     cache-home="true" lookup-home-on-startup="false" refresh-home-on-connect-failure="true">
+    </jee:remote-slsb>
 
     <bean id="jndiProperties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
         <property name="locations">
@@ -23,6 +28,7 @@
 
     <bean id="batDongSanService" class="com.test.impl.BatDongSanServiceImpl">
         <property name="categoryManagementBean" ref="categoryManagementRemoteBean"/>
+        <property name="productManagementBean" ref="productManagementRemoteBean"/>
     </bean>
 
 </beans>

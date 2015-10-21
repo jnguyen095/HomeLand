@@ -20,6 +20,7 @@ public class CategoryEntity {
     private String name;
     private String url;
     private Integer active;
+    private Integer crawled;
 
     @javax.persistence.Column(name = "CategoryID")
     @javax.persistence.Id
@@ -60,6 +61,16 @@ public class CategoryEntity {
 
     public void setActive(Integer active) {
         this.active = active;
+    }
+
+    @javax.persistence.Column(name = "Crawled")
+    @javax.persistence.Basic
+    public Integer getCrawled() {
+        return crawled;
+    }
+
+    public void setCrawled(Integer crawled) {
+        this.crawled = crawled;
     }
 
     @ManyToOne

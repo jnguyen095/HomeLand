@@ -3,6 +3,7 @@ package com.test.session;
 import com.test.domain.CategoryEntity;
 
 import javax.ejb.Local;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -13,4 +14,9 @@ import javax.ejb.Local;
  */
 @Local
 public interface CategoryLocalBean extends GenericSessionBean<CategoryEntity, Long> {
+    List<CategoryEntity> findLastCrawler();
+
+    void updateCrawlerStatus(int crawlerNotYet);
+
+    void updateCrawlerStatus4Category(Integer categoryId, int status);
 }

@@ -3,9 +3,12 @@ package com.test.impl;
 import com.test.BatDongSanService;
 import com.test.Constants;
 import com.test.business.CategoryManagementRemoteBean;
+import com.test.business.ProductManagementRemoteBean;
 import com.test.dto.BatDongSanDTO;
 import com.test.dto.CategoryDTO;
 import com.test.dto.CategoryTreeDTO;
+import com.test.utils.EmailValidator;
+import org.apache.commons.lang.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -37,17 +40,36 @@ public class BatDongSanServiceImpl implements BatDongSanService {
         this.categoryManagementBean = categoryManagementBean;
     }
 
+    public void setProductManagementBean(ProductManagementRemoteBean productManagementBean) {
+        this.productManagementBean = productManagementBean;
+    }
+
+    private ProductManagementRemoteBean productManagementBean;
     private CategoryManagementRemoteBean categoryManagementBean;
+    private static final Integer pageDeep = 10;
 
     @Override
     public void crawler() throws Exception{
-        String testUrl = "http://batdongsan.com.vn/ban-nha-rieng-tp-hcm";
-        //String testUrl = "http://batdongsan.com.vn/ban-nha-rieng-ha-noi";
-        List<BatDongSanDTO> listItems = new ArrayList<BatDongSanDTO>();
+        List<CategoryDTO> categoryDTOs = categoryManagementBean.findAll(true);
+        for(CategoryDTO categoryDTO : categoryDTOs){
+            for(int i = 0; i < pageDeep; i++){
+                String url = categoryDTO.getUrl() + (i > 1 ? "/p" + i : "");
+                logger.info("--- Gathering: " + url);
+                List<BatDongSanDTO> items = gatherInfo(url);
+                logger.info("--- Processing list: " + items.size());
+                Integer[] saveInfos = productManagementBean.saveOrUpdate(categoryDTO.getCategoryId(), items);
+                logger.info("--- Result ----");
+                logger.info("--->> [saved: " + saveInfos[0] + ", exists: " + saveInfos[1] + ", error: " + saveInfos[2] + "]");
+            }
+            categoryManagementBean.updateCrawlerStatus(categoryDTO.getCategoryId(), Constants.CRAWLER_DONE);
+
+        }
+
         for(int i = 1; i < 2; i++){
-            testUrl = "http://batdongsan.com.vn/ban-nha-rieng-tp-hcm" + (i > 1 ? "/p" + i : "");
-            List<BatDongSanDTO> items = getBrief(testUrl);
-            listItems.addAll(items);
+            String testUrl = "http://batdongsan.com.vn/ban-nha-rieng-tp-hcm" + (i > 1 ? "/p" + i : "");
+            //List<BatDongSanDTO> items = gatherInfo(testUrl);
+            //productManagementBean.saveOrUpdate(items);
+           //listItems.addAll(items);
         }
 
     }
@@ -99,6 +121,47 @@ public class BatDongSanServiceImpl implements BatDongSanService {
         }
     }
 
+    private List<BatDongSanDTO> gatherInfo(String url){
+        List<BatDongSanDTO> items = new ArrayList<BatDongSanDTO>();
+        try{
+            Document doc = Jsoup.connect(url).userAgent(Constants.userAgent).get();
+            Elements searchProductItems = doc.getElementsByClass("search-productItem");
+
+            for (Element searchProductItem : searchProductItems) {
+                BatDongSanDTO batDongSanDTO = getBrief(searchProductItem);
+                items.add(batDongSanDTO);
+            }
+        }catch (Exception e){
+            logger.info(e.getMessage());
+        }
+        return items;
+    }
+
+    private BatDongSanDTO getBrief(Element searchProductItem){
+        String pTitle = searchProductItem.select("div.p-title").select("a").attr("title");
+        String href = searchProductItem.select("div.p-title").select("a").attr("href");
+        String brief = searchProductItem.select("div.p-main").select("div.p-content").select("div.p-main-text").text();
+        String pThumb = searchProductItem.select("div.p-main").select("div.p-main-image-crop").select("a").select("img").attr("src");
+        String pPrice = searchProductItem.select("div.p-main").select("div.p-bottom-crop").select("div.floatleft").select("span.product-price").text();
+        String pArea = searchProductItem.select("div.p-main").select("div.p-bottom-crop").select("div.floatleft").select("span.product-area").text();
+        String cityDist = searchProductItem.select("div.p-main").select("div.p-bottom-crop").select("div.floatleft").select("span.product-city-dist").text();
+
+        BatDongSanDTO batDongSanDTO = new BatDongSanDTO();
+        batDongSanDTO.setTitle(pTitle);
+        batDongSanDTO.setHref(SOURCE_URL + href);
+        batDongSanDTO.setThumb(pThumb);
+        batDongSanDTO.setPriceString(pPrice);
+        batDongSanDTO.setArea(pArea);
+        batDongSanDTO.setCityDist(cityDist);
+        batDongSanDTO.setBrief(brief);
+        try{
+            updateDetail(SOURCE_URL + href, batDongSanDTO);
+        }catch (Exception e){
+            logger.info(e.getMessage());
+        }
+        return batDongSanDTO;
+    }
+
     private void updateDetail(String fullUrl, BatDongSanDTO dto) throws Exception{
         Document doc = Jsoup.connect(fullUrl).userAgent(Constants.userAgent).get();
         String detail = doc.getElementById("product-detail").select("div.pm-content").html();
@@ -113,9 +176,9 @@ public class BatDongSanServiceImpl implements BatDongSanService {
             switch (key){
                 case "Địa chỉ": dto.setAddress(value);break;
                 case "Mã số": dto.setCode(value);break;
-                case "Loại tin rao": dto.setType(value);break;
-                case "Ngày đăng tin": dto.setPostDate(value);break;
-                case "Ngày hết hạn": dto.setExpireDate(value);break;
+                case "Loại tin rao": dto.setGroup(value);break;
+                case "Ngày đăng tin": dto.setPostDateStr(value);break;
+                case "Ngày hết hạn": dto.setExpireDateStr(value);break;
                 case "Số phòng ngủ": dto.setRoom(value);break;
                 case "Số toilet": dto.setToilet(value);break;
                 default:
@@ -133,7 +196,12 @@ public class BatDongSanServiceImpl implements BatDongSanService {
                 case "Địa chỉ": dto.setContactAddress(value);break;
                 case "Điện thoại": dto.setContactPhone(value);break;
                 case "Mobile": dto.setContactMobile(value);break;
-                case "Email": dto.setContactEmail(value);break;
+                case "Email": {
+                    if(EmailValidator.validate(value)){
+                        dto.setContactEmail(value);
+                    }
+                    break;
+                }
                 default:
             }
         }
@@ -146,47 +214,20 @@ public class BatDongSanServiceImpl implements BatDongSanService {
 
         String latitude = doc.getElementById("hdLat").attr("value");
         String longitude = doc.getElementById("hdLong").attr("value");
+        String ward = doc.getElementById("divWardOptions").select("li.current").text();
+        String street = doc.getElementById("divStreetOptions").select("li.current").text();
+        String direction = doc.getElementById("divHomeDirectionOptions").select("li.current").text();
+        String brand = doc.getElementById("divProjectOptions").select("li.current").text();
+        String room = doc.getElementById("divBedRoomOptions").select("li.current").text();
 
+        dto.setRoom(room);
+        dto.setWardString(ward);
+        dto.setStreetString(street);
+        dto.setDirectionString(direction);
+        dto.setBrandString(brand);
         dto.setLongitude(longitude);
         dto.setLatitude(latitude);
         dto.setImages(images);
         dto.setDetail(detail);
-    }
-
-    private List<BatDongSanDTO> getBrief(String url){
-        List<BatDongSanDTO> items = new ArrayList<BatDongSanDTO>();
-        try{
-            Document doc = Jsoup.connect(url).userAgent(Constants.userAgent).get();
-            Elements searchProductItems = doc.getElementsByClass("search-productItem");
-
-            for (Element searchProductItem : searchProductItems) {
-                String pTitle = searchProductItem.select("div.p-title").select("a").attr("title");
-                String href = searchProductItem.select("div.p-title").select("a").attr("href");
-                String brief = searchProductItem.select("div.p-main").select("div.p-content").select("div.p-main-text").text();
-                String pThumb = searchProductItem.select("div.p-main").select("div.p-main-image-crop").select("a").select("img").attr("src");
-                String pPrice = searchProductItem.select("div.p-main").select("div.p-bottom-crop").select("div.floatleft").select("span.product-price").text();
-                String pArea = searchProductItem.select("div.p-main").select("div.p-bottom-crop").select("div.floatleft").select("span.product-area").text();
-                String cityDist = searchProductItem.select("div.p-main").select("div.p-bottom-crop").select("div.floatleft").select("span.product-city-dist").text();
-
-                BatDongSanDTO batDongSanDTO = new BatDongSanDTO();
-                batDongSanDTO.setTitle(pTitle);
-                batDongSanDTO.setHref(SOURCE_URL + href);
-                batDongSanDTO.setThumb(pThumb);
-                batDongSanDTO.setPrice(pPrice);
-                batDongSanDTO.setArea(pArea);
-                batDongSanDTO.setCityDist(cityDist);
-                batDongSanDTO.setBrief(brief);
-                try{
-                    updateDetail(SOURCE_URL + href, batDongSanDTO);
-                }catch (Exception e){
-                    continue;
-                }
-
-                items.add(batDongSanDTO);
-            }
-        }catch (IOException e){
-            System.out.print("Exception: " + e.getMessage());
-        }
-        return items;
     }
 }

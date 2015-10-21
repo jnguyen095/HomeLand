@@ -16,4 +16,7 @@ public class Constants {
     public static final int INACTIVE = 0;
     public static final String LIST_MODEL_KEY = "items";
     public static final String FORM_MODEL_KEY = "item";
+
+    public static final int CRAWLER_DONE = 1;
+    public static final int CRAWLER_NOT_YET = 0;
 }
