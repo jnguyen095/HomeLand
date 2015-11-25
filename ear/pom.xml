@@ -48,9 +48,9 @@
     </dependencies>
 
     <build>
-        <finalName>HomeLand</finalName>
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-ear-plugin</artifactId>
                 <version>${version.ear.plugin}</version>
                 <configuration>
@@ -67,13 +67,18 @@
                             <contextRoot>/</contextRoot>
                         </webModule>
                     </modules>
-                    <applicationXml>
-                        ${project.basedir}/src/main/resources/META-INF/application.xml
-                    </applicationXml>
-                    <generateApplicationXml>false</generateApplicationXml>
+
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.jboss.as.plugins</groupId>
+                <artifactId>jboss-as-maven-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
                 </configuration>
             </plugin>
         </plugins>
+
     </build>
 
 

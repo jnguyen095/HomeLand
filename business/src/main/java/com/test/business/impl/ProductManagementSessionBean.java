@@ -1,8 +1,10 @@
 package com.test.business.impl;
 
+import com.test.business.ProductManagementLocalBean;
 import com.test.business.ProductManagementRemoteBean;
 import com.test.domain.*;
 import com.test.dto.BatDongSanDTO;
+import com.test.dto.ProductDTO;
 import com.test.session.*;
 import com.test.utils.DozerSingletonMapper;
 import org.apache.commons.lang.StringUtils;
@@ -14,8 +16,10 @@ import javax.ejb.Stateless;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -25,7 +29,7 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  */
 @Stateless(name = "ProductManagementSessionEJB")
-public class ProductManagementSessionBean implements ProductManagementRemoteBean {
+public class ProductManagementSessionBean implements ProductManagementRemoteBean, ProductManagementLocalBean {
 
     @EJB
     private ProductLocalBean productLocalBean;
@@ -285,5 +289,19 @@ public class ProductManagementSessionBean implements ProductManagementRemoteBean
             }catch (DuplicateKeyException de){}
         }
         return cityEntity;
+    }
+
+    @Override
+    public Object[] searchByProperties(Map<String, Object> properties, String sortExpression, String sortDirection, int firstItem, int maxPageItems) {
+        Object[] objs = productLocalBean.searchByProperties(properties, sortExpression, sortDirection, firstItem, maxPageItems);
+        List<ProductDTO> productDTOs = new ArrayList<>();
+        List<ProductEntity> productEntities = (List<ProductEntity>)objs[1];
+        for(ProductEntity productEntity : productEntities){
+            productDTOs.add(DozerSingletonMapper.getInstance().map(productEntity, ProductDTO.class));
+        }
+        Object[] result = new Object[2];
+        result[0] = objs[0];
+        result[1] = productDTOs;
+        return result;
     }
 }

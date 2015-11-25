@@ -9,21 +9,21 @@ import javax.persistence.*;
  * Time: 10:41 PM
  * To change this template use File | Settings | File Templates.
  */
-@javax.persistence.Table(name = "role")
+@javax.persistence.Table(name = "Role")
 @Entity
 public class RoleEntity {
-    private Long roleId;
+    private Integer roleId;
     private String name;
     private String code;
 
-    @javax.persistence.Column(name = "RoleId")
+    @javax.persistence.Column(name = "RoleID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
-    public Long getRoleId() {
+    public Integer getRoleId() {
         return roleId;
     }
 
-    public void setRoleId(Long roleId) {
+    public void setRoleId(Integer roleId) {
         this.roleId = roleId;
     }
 

@@ -1,7 +1,7 @@
 1. standalone:
 
     <datasource jndi-name="java:jboss/datasources/MySqlDS" pool-name="MYDS" enabled="true" use-java-context="true">
-        <connection-url>jdbc:mysql://localhost:3306/learning</connection-url>
+        <connection-url>jdbc:mysql://localhost:3306/homeland</connection-url>
         <driver-class>com.mysql.jdbc.Driver</driver-class>
         <driver>mysql</driver>
         <security>

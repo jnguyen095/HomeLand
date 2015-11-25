@@ -11,6 +11,7 @@
 
 
     <jee:local-slsb jndi-name="java:app/business-module-1.0/CategoryManagementSessionEJB!com.test.business.CategoryManagementLocalBean" business-interface="com.test.business.CategoryManagementLocalBean" id="categoryManagementLocalBean"/>
+    <jee:local-slsb jndi-name="java:app/business-module-1.0/ProductManagementSessionEJB!com.test.business.ProductManagementLocalBean" business-interface="com.test.business.ProductManagementLocalBean" id="productManagementLocalBean"/>
 
 </beans>
 

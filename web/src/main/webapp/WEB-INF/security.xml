@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+             xmlns:beans="http://www.springframework.org/schema/beans"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:p="http://www.springframework.org/schema/p"
+             xmlns:util="http://www.springframework.org/schema/util"
+             xsi:schemaLocation="http://www.springframework.org/schema/beans
+            http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+            http://www.springframework.org/schema/security
+            http://www.springframework.org/schema/security/spring-security-3.2.xsd
+            http://www.springframework.org/schema/util
+            http://www.springframework.org/schema/util/spring-util-3.2.xsd">
+    <http pattern="/themes/admin/js/ckeditor/plugins/about/dialogs" security="none"/>
+    <http pattern="/forgotpwd.html*" security="none"/>
+    <http pattern="/login.html" security="none"/>
+    <http pattern="/ckeditor442/**" security="none"/>
+    <http auto-config="false" access-decision-manager-ref="accessDecisionManager">
+        <intercept-url pattern="/@*" access="IS_AUTHENTICATED_ANONYMOUSLY" />
+        <intercept-url pattern="/ajax/**" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
+        <custom-filter position="PRE_AUTH_FILTER" ref="myAuthenticationFilter"/>
+        <custom-filter position="REMEMBER_ME_FILTER" ref="myRememberMeAuthenticationFilter"/>
+        <custom-filter ref="ajaxTimeoutRedirectFilter" after="EXCEPTION_TRANSLATION_FILTER"/>
+
+        <intercept-url pattern="/admin/**" access="LOGON" />
+        <intercept-url pattern="/logon/**" access="LOGON" />
+
+
+        <form-login login-page="/login.html" authentication-failure-handler-ref="myAuthenticationFailureHandler" login-processing-url="/j_security_check" />
+        <logout logout-url="/logout.html" invalidate-session="false" success-handler-ref="myLogoutSuccessHandler"/>
+		<session-management session-authentication-strategy-ref="concurrentSessionControlStrategy"/>
+
+    </http>
+
+    <beans:bean id="sessionFixtationStrategy" class="org.springframework.security.web.authentication.session.SessionFixationProtectionStrategy">
+    	<beans:property name="alwaysCreateSession" value="false"></beans:property>
+    </beans:bean>
+
+    <beans:bean id="ajaxTimeoutRedirectFilter" class="com.banvien.platform.web.security.AjaxTimeoutRedirectFilter">
+        <beans:property name="customSessionExpiredErrorCode" value="508"/>
+        <beans:property name="expiredUrl" value="/login.html?error=2&amp;action=expired" />
+    </beans:bean>
+    
+    <beans:bean id="sessionRegistry" class="org.springframework.security.core.session.SessionRegistryImpl" />
+
+    <beans:bean id="concurrentSessionControlStrategy" class="org.springframework.security.web.authentication.session.ConcurrentSessionControlStrategy">
+	  <beans:constructor-arg name="sessionRegistry" ref="sessionRegistry" />
+	  <beans:property name="maximumSessions" value="5" />
+	</beans:bean>
+	
+    <authentication-manager alias="authenticationManager" erase-credentials="false">
+        <authentication-provider user-service-ref="userSecurityAdvice">
+            <password-encoder ref="passwordEncoder"/>
+        </authentication-provider>
+        <!-- This one is for remember me authentication. -->
+        <authentication-provider ref="rememberMeAuthenticationProvider"/>
+    </authentication-manager>
+
+    <beans:bean id="myLogoutSuccessHandler" class="com.banvien.platform.web.security.MyLogoutSuccessHandler">
+		<beans:property name="logoutSuccessUrl" value="/"></beans:property>
+	</beans:bean>
+
+    <beans:bean id="myRememberMeAuthenticationFilter" class=
+     "com.banvien.platform.web.security.MyRememberMeAuthenticationFilter">
+      <beans:property name="rememberMeServices" ref="rememberMeServices"/>
+      <beans:property name="authenticationManager" ref="authenticationManager" />
+    </beans:bean>
+
+    <beans:bean id="rememberMeServices" class="com.banvien.platform.web.security.MyRememberMeServices">
+      <beans:property name="userDetailsService" ref="userSecurityAdvice"/>
+      <beans:property name="tokenValiditySeconds" value="2592000" /><!-- 1 month, 30 days -->
+      <beans:property name="cookieName" value="ONE_REMEMBER_ME_COOKIE_KEY" />
+      <beans:property name="key" value="1387488235821590948LL"/>
+    </beans:bean>
+
+    <beans:bean id="rememberMeAuthenticationProvider" class=
+     "org.springframework.security.authentication.RememberMeAuthenticationProvider">
+      <beans:property name="key" value="1387488235821590948LL"/>
+    </beans:bean>
+    
+	<beans:bean id="myAuthenticationFilter" class="com.banvien.platform.web.security.AuthenticationProcessingFilterExtends">
+		<beans:property name="filterProcessesUrl" value="/j_security_check"></beans:property>
+		<beans:property name="authenticationManager" ref="authenticationManager"></beans:property>
+		<beans:property name="authenticationSuccessHandler" ref="myAuthenticationSuccessHandler"></beans:property>
+		<beans:property name="authenticationFailureHandler" ref="myAuthenticationFailureHandler"></beans:property>
+		<beans:property name="allowSessionCreation" value="false"/>
+        <beans:property name="rememberMeServices" ref="rememberMeServices"/>
+	</beans:bean>
+	<beans:bean id="myAuthenticationSuccessHandler" class="com.banvien.platform.web.security.MyAuthenticationSuccessHandler">
+		<beans:property name="alwaysUseDefaultTargetUrl" value="true"/>
+		<beans:property name="defaultTargetUrl" value="/admin/user/dashboard.html"/>
+	</beans:bean>
+	<beans:bean id="myAuthenticationFailureHandler" class="com.banvien.platform.web.security.MyAuthenticationFailureHandler">
+		<beans:property name="defaultFailureUrl" value="/login.html?error=1"/>
+		<beans:property name="allowSessionCreation" value="true"/>
+	</beans:bean>
+    <!-- Override the default password-encoder (SHA) by Triple DES -->
+    <beans:bean id="passwordEncoder" class="com.banvien.platform.web.security.MyPasswordEncoder">
+    </beans:bean>
+
+	<!-- ExceptionTranslationFilter: Handles any AccessDeniedException and AuthenticationException thrown within the filter chain.-->
+	<beans:bean id="exceptionTranslationFilter" class="org.springframework.security.web.access.ExceptionTranslationFilter">
+	  <beans:property name="authenticationEntryPoint">
+	    <beans:bean class="org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint">
+	      <beans:property name="loginFormUrl" value="/login.html?action=exc"/>
+	      <beans:property name="forceHttps" value="false"/>
+	    </beans:bean>
+	  </beans:property>
+	  <beans:property name="accessDeniedHandler">
+	    <beans:bean class="org.springframework.security.web.access.AccessDeniedHandlerImpl">
+	      <beans:property name="errorPage" value="/accessdenied.jsp"/>
+	    </beans:bean>
+	  </beans:property>
+	</beans:bean>
+	<beans:bean id="accessDecisionManager" class="org.springframework.security.access.vote.AffirmativeBased">
+        <beans:property name="allowIfAllAbstainDecisions">
+	        <beans:value>false</beans:value>
+		</beans:property>
+        <beans:property name="decisionVoters">
+            <beans:list>
+                <beans:ref local="roleVoter"/>
+                <beans:bean class="org.springframework.security.access.vote.AuthenticatedVoter"/>
+            </beans:list>
+        </beans:property>
+    </beans:bean>
+     <beans:bean id="roleVoter" class="org.springframework.security.access.vote.RoleVoter">
+        <beans:property name="rolePrefix">
+	        <beans:value/>
+        </beans:property>
+    </beans:bean>
+    <global-method-security>
+    </global-method-security>
+</beans:beans>
