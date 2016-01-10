@@ -8,4 +8,7 @@
     <decorator name="admin" page="adminLayout.jsp">
         <pattern>/*</pattern>
     </decorator>
+    <decorator name="login" page="loginLayout.jsp">
+        <pattern>/login.*</pattern>
+    </decorator>
 </decorators>

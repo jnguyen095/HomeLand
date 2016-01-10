@@ -108,7 +108,7 @@ public final class DesEncrypterUtils {
 	}
 
     public static void main(String[] args) {
-        getInstance().decrypt("FBDjAINBepQ=");
+        System.out.print(getInstance().decrypt("FBDjAINBepQ="));
     }
 
 }

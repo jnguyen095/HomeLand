@@ -12,6 +12,11 @@
 
     <jee:local-slsb jndi-name="java:app/business-module-1.0/CategoryManagementSessionEJB!com.test.business.CategoryManagementLocalBean" business-interface="com.test.business.CategoryManagementLocalBean" id="categoryManagementLocalBean"/>
     <jee:local-slsb jndi-name="java:app/business-module-1.0/ProductManagementSessionEJB!com.test.business.ProductManagementLocalBean" business-interface="com.test.business.ProductManagementLocalBean" id="productManagementLocalBean"/>
+    <jee:local-slsb jndi-name="java:app/business-module-1.0/UserGroupManagementSessionEJB!com.test.business.UserGroupManagementLocalBean" business-interface="com.test.business.UserGroupManagementLocalBean" id="userGroupManagementLocalBean"/>
+    <jee:local-slsb jndi-name="java:app/business-module-1.0/UserManagementSessionEJB!com.test.business.UserManagementLocalBean" business-interface="com.test.business.UserManagementLocalBean" id="userManagementLocalBean"/>
+
+    <bean id="userSecurityAdvice" class="com.test.security.MyUserDetailService">
+    </bean>
 
 </beans>
 

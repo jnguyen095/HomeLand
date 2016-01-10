@@ -15,6 +15,7 @@
     <link href="<c:url value="/layout/metisMenu/metisMenu.css"/>" rel="stylesheet">
     <!-- Custom CSS -->
     <link href="<c:url value="/layout/admin/homeland-admin.css"/>" rel="stylesheet">
+    <link href="<c:url value="/layout/admin/sb-admin-2.css"/>" rel="stylesheet">
     <!-- Custom Fonts -->
     <link href="<c:url value="/layout/font-awesome/css/font-awesome.min.css"/>" rel="stylesheet" type="text/css">
 
@@ -257,13 +258,16 @@
             <div class="sidebar-nav navbar-collapse">
                 <ul class="nav" id="side-menu">
                     <li>
-                        <a href="<c:url value="/home.html"/>"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
+                        <a href="<c:url value="/home.html"/>"><i class="fa fa-dashboard fa-fw"></i> <fmt:message key="menu.dashboard"/></a>
                     </li>
                     <li>
-                        <a href="#"><i class="fa fa-bar-chart-o fa-fw"></i> Admin<span class="fa arrow"></span></a>
+                        <a href="#"><i class="fa fa-bar-chart-o fa-fw"></i> <fmt:message key="menu.admin"/><span class="fa arrow"></span></a>
                         <ul class="nav nav-second-level">
                             <li>
+                                <a href="<c:url value="/admin/usergroup/list.html"/>"><fmt:message key="usergroup.title"/></a>
+                                <a href="<c:url value="/admin/user/list.html"/>"><fmt:message key="user.title"/></a>
                                 <a href="<c:url value="/admin/category/list.html"/>"><fmt:message key="category.title"/></a>
+
                             </li>
                         </ul>
                         <!-- /.nav-second-level -->
@@ -348,8 +352,10 @@
 
     <!-- Page Content -->
     <div id="page-wrapper">
-        <div class="container-fluid">
-            <decorator:body/>
+        <div class="row">
+            <div class="col-lg-12">
+                <decorator:body/>
+            </div>
             <!-- /.row -->
         </div>
         <!-- /.container-fluid -->
