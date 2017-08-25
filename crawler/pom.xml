@@ -14,14 +14,14 @@
 
     <dependencies>
         <dependency>
-            <groupId>${parent.groupId}</groupId>
+            <groupId>${project.parent.groupId}</groupId>
             <artifactId>common-module</artifactId>
-            <version>${parent.version}</version>
+            <version>${project.parent.version}</version>
         </dependency>
         <dependency>
-            <groupId>${parent.groupId}</groupId>
+            <groupId>${project.parent.groupId}</groupId>
             <artifactId>business-module</artifactId>
-            <version>${parent.version}</version>
+            <version>${project.parent.version}</version>
         </dependency>
         <dependency>
             <groupId>org.jsoup</groupId>

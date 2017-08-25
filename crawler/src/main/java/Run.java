@@ -14,8 +14,11 @@ public class Run {
         ApplicationContext context = new ClassPathXmlApplicationContext("services.xml");
         BatDongSanServiceImpl batDongSanService = (BatDongSanServiceImpl)context.getBean("batDongSanService");
         try{
+            // Crawler category first, if didn't before
+            // batDongSanService.updateMainCategory();
+
+            // Crawler data last
             batDongSanService.crawler();
-            //batDongSanService.updateMainCategory();
         }catch (Exception e){
             e.printStackTrace();
         }

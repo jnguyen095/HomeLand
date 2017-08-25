@@ -51,6 +51,8 @@ public class ProductManagementSessionBean implements ProductManagementRemoteBean
     private ProductAssetLocalBean productAssetLocalBean;
     @EJB
     private CrawlerHistoryLocalBean crawlerHistoryLocalBean;
+    @EJB
+    private ProductDetailLocalBean productDetailLocalBean;
 
     @Override
     public Integer[] saveOrUpdate(Integer categoryId, List<BatDongSanDTO> items) {
@@ -139,6 +141,8 @@ public class ProductManagementSessionBean implements ProductManagementRemoteBean
 
     private ProductEntity saveProduct(Integer categoryId, BatDongSanDTO batDongSanDTO) throws DuplicateKeyException{
         ProductEntity productEntity = DozerSingletonMapper.getInstance().map(batDongSanDTO, ProductEntity.class);
+        ProductDetailEntity  productDetailEntity = DozerSingletonMapper.getInstance().map(batDongSanDTO, ProductDetailEntity.class);
+
 
         CategoryEntity categoryEntity = new CategoryEntity();
         categoryEntity.setCategoryId(categoryId);
@@ -158,29 +162,34 @@ public class ProductManagementSessionBean implements ProductManagementRemoteBean
                         WardEntity wardEntity = saveOrLoadWard(districtEntity, batDongSanDTO.getWardString());
                         if(wardEntity != null){
                             productEntity.setWard(wardEntity);
-                            StreetEntity streetEntity = saveOrLoadStreet(wardEntity, batDongSanDTO.getStreetString());
-                            if(streetEntity != null){
-                                productEntity.setStreet(streetEntity);
-                            }
+                            productEntity.setStreet(batDongSanDTO.getStreetString());
                         }
                     }
                 }
             }
         }
-        DirectionEntity directionEntity = saveOrLoadDirection(batDongSanDTO.getDirectionString());
-        if(directionEntity != null){
-            productEntity.setDirection(directionEntity);
-        }
+
 
         BrandEntity brandEntity = saveOrLoadBrand(batDongSanDTO.getBrandString());
         if(brandEntity != null){
             productEntity.setBrand(brandEntity);
         }
 
-        productEntity.setPostDate(parseDate(batDongSanDTO.getPostDateStr()));
+        Timestamp postDate = parseDate(batDongSanDTO.getPostDateStr());
+        productEntity.setPostDate(postDate);
+        productEntity.setModifiedDate(postDate);
         productEntity.setExpireDate(parseDate(batDongSanDTO.getExpireDateStr()));
+        productEntity.setView(0);
 
         productEntity = productLocalBean.save(productEntity);
+
+        // Save Product Detail
+        productDetailEntity.setProduct(productEntity);
+        DirectionEntity directionEntity = saveOrLoadDirection(batDongSanDTO.getDirectionString());
+        if(directionEntity != null){
+            productDetailEntity.setDirection(directionEntity);
+        }
+        productDetailLocalBean.save(productDetailEntity);
 
         return productEntity;
     }

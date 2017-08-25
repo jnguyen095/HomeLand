@@ -16,6 +16,8 @@
         <class>com.test.domain.UserEntity</class>
         <class>com.test.domain.UserGroupEntity</class>
         <class>com.test.domain.RoleEntity</class>
+        <class>com.test.domain.ProductDetailEntity</class>
+        <class>com.test.domain.UnitEntity</class>
 
 
         <exclude-unlisted-classes>true</exclude-unlisted-classes>

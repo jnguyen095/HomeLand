@@ -20,14 +20,14 @@
 
     <dependencies>
         <dependency>
-            <groupId>${parent.groupId}</groupId>
+            <groupId>${project.parent.groupId}</groupId>
             <artifactId>core-module</artifactId>
             <type>ejb</type>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>${parent.groupId}</groupId>
+            <groupId>${project.parent.groupId}</groupId>
             <artifactId>common-module</artifactId>
             <type>jar</type>
             <version>${project.version}</version>

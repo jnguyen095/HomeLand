@@ -48,6 +48,26 @@
     + Them bean: messageSource trong dispatcher-servlet.xml
     + Tao file dua vao(basename) trong thu muc resources
 6. Them user cho jboss de goi remote interface
+    + Add user:
+        jpai@jpai-laptop:bin$ ./add-user.sh
+
+        What type of user do you wish to add?
+        &nbsp;a) Management User (mgmt-users.properties)
+        &nbsp;b) Application User (application-users.properties)
+        (a): b
+
+        Enter the details of the new user to add.
+        Realm (ApplicationRealm) :
+        Username : ejb
+        Password :
+        Re-enter Password :
+        What roles do you want this user to belong to? (Please enter a comma separated list, or leave blank for none)\[&nbsp; \]:
+        About to add user 'ejb' for realm 'ApplicationRealm'
+        Is this correct yes/no? yes
+        Added user 'ejb' to file '/jboss-as-7.1.1.Final/standalone/configuration/application-users.properties'
+        Added user 'ejb' to file '/jboss-as-7.1.1.Final/domain/configuration/application-users.properties'
+        Added user 'ejb' with roles to file '/jboss-as-7.1.1.Final/standalone/configuration/application-roles.properties'
+        Added user 'ejb' with roles to file '/jboss-as-7.1.1.Final/domain/configuration/application-roles.properties'
     + https://docs.jboss.org/author/display/AS71/EJB+invocations+from+a+remote+server+instance
     + $JBOSS-HOME/bin/add-user.sh
     + sua lai trong file jobss-ejb-client.properties

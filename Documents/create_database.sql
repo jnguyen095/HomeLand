@@ -19,6 +19,8 @@ CREATE TABLE Category
 	FOREIGN KEY(ParentID) REFERENCES Category(CategoryID) ON UPDATE CASCADE ON DELETE RESTRICT
 )DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
+insert into Category(CatName, Url, Active) VALUE ('Nhà đất bán', 'https://batdongsan.com.vn/nha-dat-ban', 1);
+
 DROP TABLE IF EXISTS City;
 CREATE TABLE City
 (
@@ -128,8 +130,15 @@ CREATE TABLE Product
   CityID INT,
   DistrictID INT,
   WardID INT,
-  StreetID INT,
+  Street VARCHAR(255),
   CategoryID INT NOT NULL,
+  Status INT, -- 1: active, 0: disable
+  View INT,
+  Source VARCHAR(125),
+  ModifiedDate TIMESTAMP,
+  CreatedByID INT,
+  UnitID INT,
+
 
 	PRIMARY KEY(ProductID),
 	INDEX (Code),
@@ -138,7 +147,6 @@ CREATE TABLE Product
 	FOREIGN KEY(CityID) REFERENCES City(CityID) ON UPDATE CASCADE ON DELETE RESTRICT,
 	FOREIGN KEY(DistrictID) REFERENCES District(DistrictID) ON UPDATE CASCADE ON DELETE RESTRICT,
 	FOREIGN KEY(WardID) REFERENCES Ward(WardID) ON UPDATE CASCADE ON DELETE RESTRICT,
-	FOREIGN KEY(StreetID) REFERENCES Street(StreetID) ON UPDATE CASCADE ON DELETE RESTRICT,
 	FOREIGN KEY(CategoryID) REFERENCES Category(CategoryID) ON UPDATE CASCADE ON DELETE RESTRICT
 )DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 

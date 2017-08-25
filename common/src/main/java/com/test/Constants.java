@@ -8,7 +8,7 @@ package com.test;
  * To change this template use File | Settings | File Templates.
  */
 public class Constants {
-    public static String userAgent = "Mozilla";
+    public static String userAgent = "Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:25.0) Gecko/20100101 Firefox/25.0";
     public static final String SORT_ASC = "2";
     public static final String SORT_DESC = "1";
     public static final String ALPHABET_SEARCH_PREFIX = "^$^";

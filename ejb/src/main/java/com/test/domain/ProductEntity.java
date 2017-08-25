@@ -19,32 +19,19 @@ public class ProductEntity {
     private String brief;
     private Float price;
     private String priceString;
-    private String href;
     private String area;
-    private String detail;
     private String thumb;
-    private String address;
-    private String floor;
-    private String room;
-    private String widthSize;
-    private String longSize;
-    private String toilet;
-    private Float longitude;
-    private Float latitude;
-    private String contactName;
-    private String contactPhone;
-    private String contactAddress;
-    private String contactMobile;
-    private String contactEmail;
     private Timestamp expireDate;
     private Timestamp postDate;
-    private DirectionEntity direction;
+    private Timestamp modifiedDate;
     private BrandEntity brand;
     private CityEntity city;
     private DistrictEntity district;
     private WardEntity ward;
-    private StreetEntity street;
+    private String street;
     private CategoryEntity category;
+    private Integer view;
+    private UnitEntity unit;
 
     @javax.persistence.Column(name = "ProductID")
     @Id
@@ -87,16 +74,6 @@ public class ProductEntity {
         this.brief = brief;
     }
 
-    @javax.persistence.Column(name = "Href")
-    @Basic
-    public String getHref() {
-        return href;
-    }
-
-    public void setHref(String href) {
-        this.href = href;
-    }
-
     @javax.persistence.Column(name = "Price")
     @Basic
     public Float getPrice() {
@@ -127,16 +104,6 @@ public class ProductEntity {
         this.area = area;
     }
 
-    @javax.persistence.Column(name = "Detail", columnDefinition = "TEXT")
-    @Basic
-    public String getDetail() {
-        return detail;
-    }
-
-    public void setDetail(String detail) {
-        this.detail = detail;
-    }
-
     @javax.persistence.Column(name = "Thumb")
     @Basic
     public String getThumb() {
@@ -145,137 +112,6 @@ public class ProductEntity {
 
     public void setThumb(String thumb) {
         this.thumb = thumb;
-    }
-
-    @javax.persistence.Column(name = "Address")
-    @Basic
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-
-    @javax.persistence.Column(name = "Floor")
-    @Basic
-    public String getFloor() {
-        return floor;
-    }
-
-    public void setFloor(String floor) {
-        this.floor = floor;
-    }
-
-    @javax.persistence.Column(name = "Room")
-    @Basic
-    public String getRoom() {
-        return room;
-    }
-
-    public void setRoom(String room) {
-        this.room = room;
-    }
-
-    @javax.persistence.Column(name = "WidthSize")
-    @Basic
-    public String getWidthSize() {
-        return widthSize;
-    }
-
-    public void setWidthSize(String widthSize) {
-        this.widthSize = widthSize;
-    }
-
-    @javax.persistence.Column(name = "LongSize")
-    @Basic
-    public String getLongSize() {
-        return longSize;
-    }
-
-    public void setLongSize(String longSize) {
-        this.longSize = longSize;
-    }
-
-    @javax.persistence.Column(name = "Toilet")
-    @Basic
-    public String getToilet() {
-        return toilet;
-    }
-
-    public void setToilet(String toilet) {
-        this.toilet = toilet;
-    }
-
-    @javax.persistence.Column(name = "Longitude")
-    @Basic
-    public Float getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(Float longitude) {
-        this.longitude = longitude;
-    }
-
-    @javax.persistence.Column(name = "Latitude")
-    @Basic
-    public Float getLatitude() {
-        return latitude;
-    }
-
-    public void setLatitude(Float latitude) {
-        this.latitude = latitude;
-    }
-
-    @javax.persistence.Column(name = "ContactName")
-    @Basic
-    public String getContactName() {
-        return contactName;
-    }
-
-    public void setContactName(String contactName) {
-        this.contactName = contactName;
-    }
-
-    @javax.persistence.Column(name = "ContactPhone")
-    @Basic
-    public String getContactPhone() {
-        return contactPhone;
-    }
-
-    public void setContactPhone(String contactPhone) {
-        this.contactPhone = contactPhone;
-    }
-
-    @javax.persistence.Column(name = "ContactAddress")
-    @Basic
-    public String getContactAddress() {
-        return contactAddress;
-    }
-
-    public void setContactAddress(String contactAddress) {
-        this.contactAddress = contactAddress;
-    }
-
-    @javax.persistence.Column(name = "ContactMobile")
-    @Basic
-    public String getContactMobile() {
-        return contactMobile;
-    }
-
-    public void setContactMobile(String contactMobile) {
-        this.contactMobile = contactMobile;
-    }
-
-    @javax.persistence.Column(name = "ContactEmail")
-    @Basic
-    public String getContactEmail() {
-        return contactEmail;
-    }
-
-    public void setContactEmail(String contactEmail) {
-        this.contactEmail = contactEmail;
     }
 
     @javax.persistence.Column(name = "ExpireDate")
@@ -296,16 +132,6 @@ public class ProductEntity {
 
     public void setPostDate(Timestamp postDate) {
         this.postDate = postDate;
-    }
-
-    @ManyToOne
-    @javax.persistence.JoinColumn(name = "DirectionID")
-    public DirectionEntity getDirection() {
-        return direction;
-    }
-
-    public void setDirection(DirectionEntity direction) {
-        this.direction = direction;
     }
 
     @ManyToOne
@@ -348,13 +174,13 @@ public class ProductEntity {
         this.ward = ward;
     }
 
-    @ManyToOne
-    @javax.persistence.JoinColumn(name = "StreetID")
-    public StreetEntity getStreet() {
+    @Basic
+    @javax.persistence.Column(name = "Street")
+    public String getStreet() {
         return street;
     }
 
-    public void setStreet(StreetEntity street) {
+    public void setStreet(String street) {
         this.street = street;
     }
 
@@ -366,5 +192,33 @@ public class ProductEntity {
 
     public void setCategory(CategoryEntity category) {
         this.category = category;
+    }
+
+    @Basic
+    @javax.persistence.Column(name = "View")
+    public Integer getView() {
+        return view;
+    }
+
+    public void setView(Integer view) {
+        this.view = view;
+    }
+
+    @ManyToOne
+    @javax.persistence.JoinColumn(name = "UnitID")
+    public UnitEntity getUnit() {
+        return unit;
+    }
+
+    public void setUnit(UnitEntity unit) {
+        this.unit = unit;
+    }
+
+    public Timestamp getModifiedDate() {
+        return modifiedDate;
+    }
+
+    public void setModifiedDate(Timestamp modifiedDate) {
+        this.modifiedDate = modifiedDate;
     }
 }

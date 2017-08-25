@@ -25,7 +25,7 @@ public class BatDongSanDTO implements Serializable {
     private String cityDist;
     private String thumb;
     private String address;
-    private String floor;
+    private String floor; // so tang
     private String room;
     private String widthSize;
     private String longSize;
@@ -37,6 +37,7 @@ public class BatDongSanDTO implements Serializable {
     private String brandString;
     private String wardString;
     private String streetString;
+    private String source;
 
 
     private String contactName;
@@ -282,5 +283,13 @@ public class BatDongSanDTO implements Serializable {
 
     public void setBrandString(String brandString) {
         this.brandString = brandString;
+    }
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
     }
 }
