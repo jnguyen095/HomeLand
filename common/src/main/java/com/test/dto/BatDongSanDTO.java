@@ -21,6 +21,7 @@ public class BatDongSanDTO implements Serializable {
     private String title;
     private String href;
     private String priceString;
+    private Float price;
     private String area;
     private String cityDist;
     private String thumb;
@@ -38,6 +39,7 @@ public class BatDongSanDTO implements Serializable {
     private String wardString;
     private String streetString;
     private String source;
+    private String unitString;
 
 
     private String contactName;
@@ -291,5 +293,21 @@ public class BatDongSanDTO implements Serializable {
 
     public void setSource(String source) {
         this.source = source;
+    }
+
+    public Float getPrice() {
+        return price;
+    }
+
+    public void setPrice(Float price) {
+        this.price = price;
+    }
+
+    public String getUnitString() {
+        return unitString;
+    }
+
+    public void setUnitString(String unitString) {
+        this.unitString = unitString;
     }
 }

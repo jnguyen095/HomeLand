@@ -32,6 +32,7 @@ public class ProductEntity {
     private CategoryEntity category;
     private Integer view;
     private UnitEntity unit;
+    private String address;
 
     @javax.persistence.Column(name = "ProductID")
     @Id
@@ -220,5 +221,15 @@ public class ProductEntity {
 
     public void setModifiedDate(Timestamp modifiedDate) {
         this.modifiedDate = modifiedDate;
+    }
+
+    @javax.persistence.Column(name = "Address")
+    @Basic
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 }

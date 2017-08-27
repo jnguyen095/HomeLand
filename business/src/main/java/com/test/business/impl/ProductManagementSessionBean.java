@@ -53,6 +53,8 @@ public class ProductManagementSessionBean implements ProductManagementRemoteBean
     private CrawlerHistoryLocalBean crawlerHistoryLocalBean;
     @EJB
     private ProductDetailLocalBean productDetailLocalBean;
+    @EJB
+    private UnitLocalBean unitLocalBean;
 
     @Override
     public Integer[] saveOrUpdate(Integer categoryId, List<BatDongSanDTO> items) {
@@ -175,6 +177,11 @@ public class ProductManagementSessionBean implements ProductManagementRemoteBean
             productEntity.setBrand(brandEntity);
         }
 
+        UnitEntity unitEntity = saveOrLoadUnit(batDongSanDTO.getUnitString());
+        if(unitEntity != null){
+            productEntity.setUnit(unitEntity);
+        }
+
         Timestamp postDate = parseDate(batDongSanDTO.getPostDateStr());
         productEntity.setPostDate(postDate);
         productEntity.setModifiedDate(postDate);
@@ -192,6 +199,22 @@ public class ProductManagementSessionBean implements ProductManagementRemoteBean
         productDetailLocalBean.save(productDetailEntity);
 
         return productEntity;
+    }
+
+    private UnitEntity saveOrLoadUnit(String unitString){
+        UnitEntity unitEntity = null;
+        if(StringUtils.isNotBlank(unitString)){
+            try{
+                unitEntity = unitLocalBean.findEqualUnique("title", unitString);
+            }catch (ObjectNotFoundException e){
+                unitEntity = new UnitEntity();
+                unitEntity.setTitle(unitString);
+                try{
+                    unitEntity = unitLocalBean.save(unitEntity);
+                }catch (DuplicateKeyException de){}
+            }
+        }
+        return unitEntity;
     }
 
     private BrandEntity saveOrLoadBrand(String brandString){

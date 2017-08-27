@@ -9,6 +9,7 @@ import com.test.dto.CategoryDTO;
 import com.test.dto.CategoryTreeDTO;
 import com.test.utils.EmailValidator;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.NumberUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -35,7 +36,7 @@ public class BatDongSanServiceImpl implements BatDongSanService {
 
     private Logger logger = Logger.getLogger(this.getClass().getName());
     static final String SOURCE_URL = "https://batdongsan.com.vn";
-    private static final Integer PAGE_DEEP = 2;
+    private static final Integer PAGE_DEEP = 5;
     private ProductManagementRemoteBean productManagementBean;
     private CategoryManagementRemoteBean categoryManagementBean;
 
@@ -69,7 +70,7 @@ public class BatDongSanServiceImpl implements BatDongSanService {
 
         }
 
-        for(int i = 1; i < 2; i++){
+        for(int i = 1; i < 5; i++){
             String testUrl = "http://batdongsan.com.vn/ban-nha-rieng-tp-hcm" + (i > 1 ? "/p" + i : "");
             //List<BatDongSanDTO> items = gatherInfo(testUrl);
             //productManagementBean.saveOrUpdate(items);
@@ -155,7 +156,11 @@ public class BatDongSanServiceImpl implements BatDongSanService {
         batDongSanDTO.setHref(SOURCE_URL + href);
         batDongSanDTO.setThumb(pThumb);
         batDongSanDTO.setPriceString(pPrice);
-        batDongSanDTO.setArea(pArea);
+
+        Object[] objects = getPriceFromString(pPrice);
+        batDongSanDTO.setPrice(objects != null ? (Float)objects[0] : -1);
+        batDongSanDTO.setUnitString(objects != null ? (String)objects[1]: "");
+        batDongSanDTO.setArea(getAreaFromString(pArea));
         batDongSanDTO.setCityDist(cityDist);
         batDongSanDTO.setBrief(brief);
         batDongSanDTO.setSource(SOURCE_URL);
@@ -167,6 +172,36 @@ public class BatDongSanServiceImpl implements BatDongSanService {
         return batDongSanDTO;
     }
 
+    private Object[] getPriceFromString(String priceStr){
+        Float result = -1f;
+        if(StringUtils.isNotBlank(priceStr)){
+            String[] strs = priceStr.split(" ");
+            if(strs.length > 1){
+                String val = strs[0].trim();
+                if(NumberUtils.isNumber(val)){
+                    float price = Float.valueOf(val);
+                    String unitString = strs[1];
+                    return new Object[]{price, unitString};
+                }
+            }
+        }
+        return null;
+    }
+
+    private String getAreaFromString(String areaStr){
+        String result = areaStr;
+        if(StringUtils.isNotBlank(areaStr)){
+            String[] strs = areaStr.split(" ");
+            if(strs.length > 1){
+                String val = strs[0];
+                if(NumberUtils.isNumber(val)){
+                    return val;
+                }
+            }
+        }
+        return result;
+    }
+
     private void updateDetail(String fullUrl, BatDongSanDTO dto) throws Exception{
         Document doc = Jsoup.connect(fullUrl).userAgent(Constants.userAgent).get();
         String detail = doc.getElementById("product-detail").select("div.pm-desc").html();
@@ -176,7 +211,7 @@ public class BatDongSanServiceImpl implements BatDongSanService {
         for(Element dacDiem : divDacDiemBatDongSan){
             String key = dacDiem.select("div.left").text().trim();
             String value = dacDiem.select("div.right").text();
-            logger.info("[" + key + ": " + value + "]");
+            //logger.info("[" + key + ": " + value + "]");
 
             switch (key){
                 case "Địa chỉ": dto.setAddress(value);break;
