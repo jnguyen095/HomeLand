@@ -12,7 +12,8 @@ import java.io.Serializable;
 public class CategoryDTO implements Serializable{
     private Integer categoryId;
     private String name;
-    private String url;
+    private String batdongsanUrl;
+    private String muabannhadatUrl;
     private Integer active;
     private CategoryDTO parent;
     private Integer crawled;
@@ -41,14 +42,6 @@ public class CategoryDTO implements Serializable{
         this.name = name;
     }
 
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
     public Integer getActive() {
         return active;
     }
@@ -63,5 +56,21 @@ public class CategoryDTO implements Serializable{
 
     public void setCrawled(Integer crawled) {
         this.crawled = crawled;
+    }
+
+    public String getBatdongsanUrl() {
+        return batdongsanUrl;
+    }
+
+    public void setBatdongsanUrl(String batdongsanUrl) {
+        this.batdongsanUrl = batdongsanUrl;
+    }
+
+    public String getMuabannhadatUrl() {
+        return muabannhadatUrl;
+    }
+
+    public void setMuabannhadatUrl(String muabannhadatUrl) {
+        this.muabannhadatUrl = muabannhadatUrl;
     }
 }

@@ -14,6 +14,6 @@ import java.util.List;
  */
 @Remote
 public interface BatDongSanService {
-    public void crawler() throws Exception;
-    public void updateMainCategory();
+    void updateMainCategory();
+    void crawlerNews();
 }

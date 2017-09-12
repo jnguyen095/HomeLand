@@ -8,6 +8,7 @@ import com.test.dto.ProductDTO;
 import com.test.session.*;
 import com.test.utils.DozerSingletonMapper;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.time.DateUtils;
 
 import javax.ejb.DuplicateKeyException;
 import javax.ejb.EJB;
@@ -20,6 +21,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created with IntelliJ IDEA.
@@ -30,7 +34,7 @@ import java.util.Map;
  */
 @Stateless(name = "ProductManagementSessionEJB")
 public class ProductManagementSessionBean implements ProductManagementRemoteBean, ProductManagementLocalBean {
-
+    private Logger logger = Logger.getLogger(this.getClass().getName());
     @EJB
     private ProductLocalBean productLocalBean;
     @EJB
@@ -72,9 +76,11 @@ public class ProductManagementSessionBean implements ProductManagementRemoteBean
                         error++;
                     }
                 }else{
+                    logger.log(Level.ALL, "Validate fail");
                     error++;
                 }
             }else{
+                logger.log(Level.ALL, "Product exists");
                 exists++;
             }
         }
@@ -119,8 +125,6 @@ public class ProductManagementSessionBean implements ProductManagementRemoteBean
         }else if(StringUtils.isBlank(batDongSanDTO.getBrief())){
             ok = Boolean.FALSE;
         }else if(StringUtils.isBlank(batDongSanDTO.getPostDateStr())){
-            ok = Boolean.FALSE;
-        }else if(StringUtils.isBlank(batDongSanDTO.getExpireDateStr())){
             ok = Boolean.FALSE;
         }
 
@@ -185,7 +189,11 @@ public class ProductManagementSessionBean implements ProductManagementRemoteBean
         Timestamp postDate = parseDate(batDongSanDTO.getPostDateStr());
         productEntity.setPostDate(postDate);
         productEntity.setModifiedDate(postDate);
-        productEntity.setExpireDate(parseDate(batDongSanDTO.getExpireDateStr()));
+        if(StringUtils.isNotBlank(batDongSanDTO.getExpireDateStr())) {
+            productEntity.setExpireDate(parseDate(batDongSanDTO.getExpireDateStr()));
+        }else{
+            productEntity.setExpireDate(productEntity.getPostDate());
+        }
         productEntity.setView(0);
 
         productEntity = productLocalBean.save(productEntity);
