@@ -19,11 +19,12 @@
         <class>com.test.domain.ProductDetailEntity</class>
         <class>com.test.domain.UnitEntity</class>
         <class>com.test.domain.NewsEntity</class>
+        <class>com.test.domain.SampleHouseEntity</class>
 
 
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <properties>
-            <property name="hibernate.default_schema" value="homeland" />
+            <property name="hibernate.default_schema" value="tinf975d_tindatdai" />
             <property name="hibernate.hbm2ddl.auto" value="validate"/>
             <property name="hibernate.show_sql" value="true"/>
             <property name="hibernate.default_batch_fetch_size" value="20"/>
@@ -35,10 +36,6 @@
             <property name="jboss.entity.manager.jndi.name" value="java:jboss/homeLandEAREntityManager"/>
             <property name="jboss.entity.manager.factory.jndi.name" value="java:jboss/homeLandEAREntityManagerFactory"/>
             <property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect"/>
-            <property name="toplink.jdbc.url" value="jdbc:mysql://localhost:3306/homeland"/>
-            <property name="toplink.jdbc.driver" value="com.mysql.jdbc.Driver"/>
-            <property name="toplink.jdbc.user" value="root"/>
-            <property name="toplink.jdbc.password" value="123456"/>
 
         </properties>
 

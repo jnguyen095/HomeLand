@@ -14,4 +14,6 @@ public interface CrawlerService {
     String crawlerUrl();
     void doCrawler() throws Exception;
     Integer crawlerDeep();
+    void crawlerNews();
+    void crawlerSampleHouse();
 }

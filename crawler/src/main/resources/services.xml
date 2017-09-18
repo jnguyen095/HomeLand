@@ -22,6 +22,11 @@
                      id="newsManagementRemoteBean" environment-ref="jndiProperties"
                      cache-home="true" lookup-home-on-startup="false" refresh-home-on-connect-failure="true">
     </jee:remote-slsb>
+    <jee:remote-slsb jndi-name="ejb:ear-essembly-1.0/business-module-1.0/SampleHouseManagementSessionEJB!com.test.business.SampleHouseManagementRemoteBean"
+                     business-interface="com.test.business.SampleHouseManagementRemoteBean"
+                     id="sampleHouseManagementRemoteBean" environment-ref="jndiProperties"
+                     cache-home="true" lookup-home-on-startup="false" refresh-home-on-connect-failure="true">
+    </jee:remote-slsb>
 
     <bean id="jndiProperties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
         <property name="locations">
@@ -35,11 +40,14 @@
         <property name="categoryManagementBean" ref="categoryManagementRemoteBean"/>
         <property name="productManagementBean" ref="productManagementRemoteBean"/>
         <property name="newsManagementBean" ref="newsManagementRemoteBean"/>
+        <property name="sampleHouseManagementBean" ref="sampleHouseManagementRemoteBean"/>
     </bean>
 
     <bean id="muaBanNhaDatService" class="com.test.impl.MuaBanNhaDatServiceImpl">
         <property name="categoryManagementBean" ref="categoryManagementRemoteBean"/>
         <property name="productManagementBean" ref="productManagementRemoteBean"/>
+        <property name="newsManagementBean" ref="newsManagementRemoteBean"/>
+        <property name="sampleHouseManagementBean" ref="sampleHouseManagementRemoteBean"/>
     </bean>
 
 </beans>

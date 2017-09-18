@@ -20,11 +20,14 @@ public class Run {
             // batDongSanService.updateMainCategory();
 
             // Crawler batdongsan.com.vn
-             //batDongSanService.doCrawler();
-            batDongSanService.crawlerNews();
+             batDongSanService.doCrawler();
+             batDongSanService.crawlerNews();
+             batDongSanService.crawlerSampleHouse();
 
             // Crawler muabannhadat.vn
-            // muaBanNhaDatService.doCrawler();
+             muaBanNhaDatService.doCrawler();
+             muaBanNhaDatService.crawlerNews();
+             muaBanNhaDatService.crawlerSampleHouse();
         }catch (Exception e){
             e.printStackTrace();
         }

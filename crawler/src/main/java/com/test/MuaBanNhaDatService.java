@@ -7,4 +7,5 @@ package com.test;
  * Time: 3:18 PM
  */
 public interface MuaBanNhaDatService {
+
 }

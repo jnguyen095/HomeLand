@@ -4,9 +4,13 @@ import com.test.Constants;
 import com.test.CrawlerService;
 import com.test.MuaBanNhaDatService;
 import com.test.business.CategoryManagementRemoteBean;
+import com.test.business.NewsManagementRemoteBean;
 import com.test.business.ProductManagementRemoteBean;
+import com.test.business.SampleHouseManagementRemoteBean;
 import com.test.dto.BatDongSanDTO;
 import com.test.dto.CategoryDTO;
+import com.test.dto.NewsDTO;
+import com.test.dto.SampleHouseDTO;
 import com.test.utils.EmailValidator;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
@@ -15,7 +19,10 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -30,6 +37,16 @@ public class MuaBanNhaDatServiceImpl implements CrawlerService, MuaBanNhaDatServ
     private static final Integer PAGE_DEEP = 5;
     private ProductManagementRemoteBean productManagementBean;
     private CategoryManagementRemoteBean categoryManagementBean;
+    private NewsManagementRemoteBean newsManagementBean;
+    private SampleHouseManagementRemoteBean sampleHouseManagementBean;
+
+    public void setSampleHouseManagementBean(SampleHouseManagementRemoteBean sampleHouseManagementBean) {
+        this.sampleHouseManagementBean = sampleHouseManagementBean;
+    }
+
+    public void setNewsManagementBean(NewsManagementRemoteBean newsManagementBean) {
+        this.newsManagementBean = newsManagementBean;
+    }
 
     public void setCategoryManagementBean(CategoryManagementRemoteBean categoryManagementBean) {
         this.categoryManagementBean = categoryManagementBean;
@@ -76,6 +93,136 @@ public class MuaBanNhaDatServiceImpl implements CrawlerService, MuaBanNhaDatServ
        /* String url = "http://www.muabannhadat.vn/nha-ban-3513";
         logger.info("--- Gathering: " + url);
         List<BatDongSanDTO> items = gatherInfo(url);*/
+    }
+
+    @Override
+    public void crawlerNews() {
+        String newUrl = "http://www.muabannhadat.vn/tin-tuc/thong-tin-nha-dat";
+
+        try {
+            SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+            for(int i = 0; i < crawlerDeep(); i++) {
+                String url = newUrl + (i > 1 ? "/?page=" + i : "");
+                logger.info("--- Gathering: " + url);
+                List<NewsDTO> items = gatherNews(url, df);
+                logger.info("--- Processing list: " + items.size());
+                try {
+                    Integer[] saveInfos = newsManagementBean.saveItems(items);
+                    logger.info("--- Result ----");
+                    logger.info("--->> [saved: " + saveInfos[0] + ", exists: " + saveInfos[1] + ", error: " + saveInfos[2] + "]");
+                }catch (Exception e){
+                    logger.info(e.getMessage());
+                    continue;
+                }
+            }
+
+        }catch (Exception e){
+            logger.info(e.getMessage());
+        }
+    }
+
+    @Override
+    public void crawlerSampleHouse() {
+        String newUrl = "http://www.muabannhadat.vn/tin-tuc/mau-kien-truc-nha-dep";
+
+        try {
+            SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+            for(int i = 0; i < crawlerDeep(); i++) {
+                String url = newUrl + (i > 1 ? "/?page=" + i : "");
+                logger.info("--- Gathering: " + url);
+                List<SampleHouseDTO> items = gatherSampleHouse(url, df);
+                logger.info("--- Processing list: " + items.size());
+                try {
+                    Integer[] saveInfos = sampleHouseManagementBean.saveItems(items);
+                    logger.info("--- Result ----");
+                    logger.info("--->> [saved: " + saveInfos[0] + ", exists: " + saveInfos[1] + ", error: " + saveInfos[2] + "]");
+                }catch (Exception e){
+                    logger.info(e.getMessage());
+                    continue;
+                }
+            }
+
+        }catch (Exception e){
+            logger.info(e.getMessage());
+        }
+    }
+
+    private List<SampleHouseDTO> gatherSampleHouse(String url, SimpleDateFormat df){
+        List<SampleHouseDTO> results = new ArrayList<>();
+        try{
+            Document doc = Jsoup.connect(url).userAgent(Constants.userAgent).get();
+            Elements news = doc.getElementsByClass("_CategoeriesListingItem");
+
+            for(Element newElement : news){
+                String dateTime = newElement.getElementsByClass("_date").text().trim();
+                String thumb = newElement.getElementsByClass("img-thumbnail").attr("src");
+                String detailUrl = newElement.getElementsByClass("_ViewDetailCategories").attr("href");
+                String title = newElement.getElementsByClass("_title").text();
+                String brief = newElement.getElementsByClass("_des").text();
+                if (!detailUrl.contains("http")) {
+                    detailUrl = crawlerUrl() + detailUrl;
+                }
+                Document detailDoc = Jsoup.connect(detailUrl).userAgent(Constants.userAgent).get();
+                String detail = "<div class='summary'><h2>" + brief + "</h2></div>" + detailDoc.getElementsByClass("__DesFull").html();
+                String source = detailDoc.getElementsByTag("p").select(".pull-right").html();
+                Date createdDate = df.parse(dateTime);
+
+                SampleHouseDTO dto = new SampleHouseDTO();
+                dto.setTitle(title);
+                dto.setBrief(brief);
+                dto.setThumb(thumb);
+                dto.setDescription(detail);
+                dto.setView(0);
+                dto.setStatus(Constants.ACTIVE);
+                dto.setSource(StringUtils.isBlank(source) ? "MuaBanNhaDat" : source);
+                dto.setCreatedDate(new Timestamp(createdDate.getTime()));
+                dto.setUrl(detailUrl);
+
+                results.add(dto);
+            }
+        }catch (Exception e){
+            logger.info(e.getMessage());
+        }
+        return results;
+    }
+
+    private List<NewsDTO> gatherNews(String url, SimpleDateFormat df){
+        List<NewsDTO> results = new ArrayList<>();
+        try{
+            Document doc = Jsoup.connect(url).userAgent(Constants.userAgent).get();
+            Elements news = doc.getElementsByClass("_CategoeriesListingItem");
+
+            for(Element newElement : news){
+                String dateTime = newElement.getElementsByClass("_date").text().trim();
+                String thumb = newElement.getElementsByClass("img-thumbnail").attr("src");
+                String detailUrl = newElement.getElementsByClass("_ViewDetailCategories").attr("href");
+                String title = newElement.getElementsByClass("_title").text();
+                String brief = newElement.getElementsByClass("_des").text();
+                if (!detailUrl.contains("http")) {
+                    detailUrl = crawlerUrl() + detailUrl;
+                }
+                Document detailDoc = Jsoup.connect(detailUrl).userAgent(Constants.userAgent).get();
+                String detail = "<div class='summary'><h2>" + brief + "</h2></div>" + detailDoc.getElementsByClass("__DesFull").html();
+                String source = detailDoc.getElementsByTag("p").select(".pull-right").html();
+                Date createdDate = df.parse(dateTime);
+
+                NewsDTO dto = new NewsDTO();
+                dto.setTitle(title);
+                dto.setBrief(brief);
+                dto.setThumb(thumb);
+                dto.setDescription(detail);
+                dto.setView(0);
+                dto.setStatus(Constants.ACTIVE);
+                dto.setSource(source);
+                dto.setCreatedDate(new Timestamp(createdDate.getTime()));
+                dto.setUrl(detailUrl);
+
+                results.add(dto);
+            }
+        }catch (Exception e){
+            logger.info(e.getMessage());
+        }
+        return results;
     }
 
     private List<BatDongSanDTO> gatherInfo(String url){

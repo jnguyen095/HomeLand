@@ -9,7 +9,7 @@ import javax.persistence.*;
  * Time: 10:41 PM
  * To change this template use File | Settings | File Templates.
  */
-@javax.persistence.Table(name = "Role")
+@javax.persistence.Table(name = "role")
 @Entity
 public class RoleEntity {
     private Integer roleId;

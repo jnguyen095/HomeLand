@@ -6,10 +6,8 @@ import com.test.CrawlerService;
 import com.test.business.CategoryManagementRemoteBean;
 import com.test.business.NewsManagementRemoteBean;
 import com.test.business.ProductManagementRemoteBean;
-import com.test.dto.BatDongSanDTO;
-import com.test.dto.CategoryDTO;
-import com.test.dto.CategoryTreeDTO;
-import com.test.dto.NewsDTO;
+import com.test.business.SampleHouseManagementRemoteBean;
+import com.test.dto.*;
 import com.test.utils.EmailValidator;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
@@ -44,6 +42,11 @@ public class BatDongSanServiceImpl implements CrawlerService, BatDongSanService 
     private ProductManagementRemoteBean productManagementBean;
     private CategoryManagementRemoteBean categoryManagementBean;
     private NewsManagementRemoteBean newsManagementBean;
+    private SampleHouseManagementRemoteBean sampleHouseManagementBean;
+
+    public void setSampleHouseManagementBean(SampleHouseManagementRemoteBean sampleHouseManagementBean) {
+        this.sampleHouseManagementBean = sampleHouseManagementBean;
+    }
 
     public void setNewsManagementBean(NewsManagementRemoteBean newsManagementBean) {
         this.newsManagementBean = newsManagementBean;
@@ -146,8 +149,8 @@ public class BatDongSanServiceImpl implements CrawlerService, BatDongSanService 
 
     @Override
     public void crawlerNews() {
-        //String newUrl = "https://batdongsan.com.vn/tin-thi-truong";
-        String newUrl = "https://batdongsan.com.vn/chinh-sach-quan-ly";
+        String newUrl = "https://batdongsan.com.vn/tin-thi-truong";
+        //String newUrl = "https://batdongsan.com.vn/chinh-sach-quan-ly";
         try {
             SimpleDateFormat df = new SimpleDateFormat("hh:mm dd/MM/yyyy");
             for(int i = 0; i < crawlerDeep(); i++) {
@@ -168,6 +171,71 @@ public class BatDongSanServiceImpl implements CrawlerService, BatDongSanService 
         }catch (Exception e){
             logger.info(e.getMessage());
         }
+    }
+
+    @Override
+    public void crawlerSampleHouse() {
+        String newUrl = "https://batdongsan.com.vn/nha-dep";
+
+        try {
+            SimpleDateFormat df = new SimpleDateFormat("hh:mm dd/MM/yyyy");
+            for(int i = 0; i < crawlerDeep(); i++) {
+                String url = newUrl + (i > 1 ? "/p" + i : "");
+                logger.info("--- Gathering: " + url);
+                List<SampleHouseDTO> items = gatherSampleHouse(url, df);
+                logger.info("--- Processing list: " + items.size());
+                try {
+                    Integer[] saveInfos = sampleHouseManagementBean.saveItems(items);
+                    logger.info("--- Result ----");
+                    logger.info("--->> [saved: " + saveInfos[0] + ", exists: " + saveInfos[1] + ", error: " + saveInfos[2] + "]");
+                }catch (Exception e){
+                    logger.info(e.getMessage());
+                    continue;
+                }
+            }
+
+        }catch (Exception e){
+            logger.info(e.getMessage());
+        }
+    }
+
+    private List<SampleHouseDTO> gatherSampleHouse(String url, SimpleDateFormat df){
+        List<SampleHouseDTO> results = new ArrayList<>();
+        try{
+            Document doc = Jsoup.connect(url).userAgent(Constants.userAgent).get();
+            Elements news = doc.getElementsByClass("tintuc-row1");
+
+            for(Element newElement : news){
+                String dateTime = newElement.getElementsByClass("datetime").text();
+                String thumb = newElement.getElementsByTag("img").attr("src");
+                String detailUrl = newElement.getElementsByTag("h3").get(0).getElementsByTag("a").attr("href");
+                String title = newElement.getElementsByTag("h3").get(0).getElementsByTag("a").text();
+                String brief = newElement.getElementsByTag("p").text();
+                if (!detailUrl.contains("http")) {
+                    detailUrl = crawlerUrl() + detailUrl;
+                }
+                Document detailDoc = Jsoup.connect(detailUrl).userAgent(Constants.userAgent).get();
+                String detail = "<div class='summary'><h2>" + brief + "</h2></div>" + detailDoc.getElementById("divContents").html();
+                String source = detailDoc.getElementsByClass("soucenews").html();
+                Date createdDate = df.parse(dateTime);
+
+                SampleHouseDTO dto = new SampleHouseDTO();
+                dto.setTitle(title);
+                dto.setBrief(brief);
+                dto.setThumb(thumb);
+                dto.setDescription(detail);
+                dto.setView(0);
+                dto.setStatus(Constants.ACTIVE);
+                dto.setSource(StringUtils.isNotBlank(source) ? source : "https://batdongsan.com.vn");
+                dto.setCreatedDate(new Timestamp(createdDate.getTime()));
+                dto.setUrl(detailUrl);
+
+                results.add(dto);
+            }
+        }catch (Exception e){
+            logger.info(e.getMessage());
+        }
+        return results;
     }
 
     private List<NewsDTO> gatherNews(String url, SimpleDateFormat df){

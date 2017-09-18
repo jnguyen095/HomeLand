@@ -15,5 +15,4 @@ import java.util.List;
 @Remote
 public interface BatDongSanService {
     void updateMainCategory();
-    void crawlerNews();
 }

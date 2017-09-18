@@ -10,7 +10,7 @@ import java.sql.Timestamp;
  * Time: 10:57 PM
  * To change this template use File | Settings | File Templates.
  */
-@javax.persistence.Table(name = "CrawlerHistory")
+@javax.persistence.Table(name = "crawlerhistory")
 @Entity
 public class CrawlerHistoryEntity {
     private Integer crawlerHistoryId;

@@ -12,7 +12,7 @@ import javax.persistence.ManyToOne;
  * Time: 11:04 AM
  * To change this template use File | Settings | File Templates.
  */
-@javax.persistence.Table(name = "Category")
+@javax.persistence.Table(name = "category")
 @Entity
 public class CategoryEntity {
     private Integer categoryId;
