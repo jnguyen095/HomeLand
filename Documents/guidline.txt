@@ -71,3 +71,7 @@
     + https://docs.jboss.org/author/display/AS71/EJB+invocations+from+a+remote+server+instance
     + $JBOSS-HOME/bin/add-user.sh
     + sua lai trong file jobss-ejb-client.properties
+7. Tao mot request len https bi loi: ko certificate duoc:
+    - Len site do bang firefox: click len o khoa mau xanh -> Security -> View Certificated -> download ve duoc file: dothinet.crt
+    - keytool -import -file D:\dothinet.crt -storepass changeit -keystore "C/Programe Files/Java/jdk1.7.0_80/jre/lib/security/cacerts" -alias DoThi
+    - Chay lai la duoc

@@ -14,11 +14,11 @@ import java.sql.Timestamp;
 @Entity
 public class CrawlerHistoryEntity {
     private Integer crawlerHistoryId;
-    private CategoryEntity category;
+    private String siteUrl;
     private Integer added;
-    private Integer updated;
+    private Integer skip;
     private Integer error;
-    private Timestamp updatedDate;
+    private Timestamp crawlerDate;
 
     @javax.persistence.Column(name = "CrawlerHistoryID")
     @Id
@@ -31,16 +31,6 @@ public class CrawlerHistoryEntity {
         this.crawlerHistoryId = crawlerHistoryId;
     }
 
-    @ManyToOne
-    @javax.persistence.JoinColumn(name = "CategoryID")
-    public CategoryEntity getCategory() {
-        return category;
-    }
-
-    public void setCategory(CategoryEntity category) {
-        this.category = category;
-    }
-
     @javax.persistence.Column(name = "Added")
     @Basic
     public Integer getAdded() {
@@ -51,14 +41,14 @@ public class CrawlerHistoryEntity {
         this.added = added;
     }
 
-    @javax.persistence.Column(name = "Updated")
+    @javax.persistence.Column(name = "Skip")
     @Basic
-    public Integer getUpdated() {
-        return updated;
+    public Integer getSkip() {
+        return skip;
     }
 
-    public void setUpdated(Integer updated) {
-        this.updated = updated;
+    public void setSkip(Integer skip) {
+        this.skip = skip;
     }
 
     @javax.persistence.Column(name = "Error")
@@ -71,14 +61,24 @@ public class CrawlerHistoryEntity {
         this.error = error;
     }
 
-    @javax.persistence.Column(name = "UpdatedDate")
+    @javax.persistence.Column(name = "SiteUrl")
     @Basic
-    public Timestamp getUpdatedDate() {
-        return updatedDate;
+    public String getSiteUrl() {
+        return siteUrl;
     }
 
-    public void setUpdatedDate(Timestamp updatedDate) {
-        this.updatedDate = updatedDate;
+    public void setSiteUrl(String siteUrl) {
+        this.siteUrl = siteUrl;
+    }
+
+    @javax.persistence.Column(name = "CrawlerDate")
+    @Basic
+    public Timestamp getCrawlerDate() {
+        return crawlerDate;
+    }
+
+    public void setCrawlerDate(Timestamp crawlerDate) {
+        this.crawlerDate = crawlerDate;
     }
 }
 

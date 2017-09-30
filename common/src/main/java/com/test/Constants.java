@@ -26,5 +26,9 @@ public class Constants {
 
     public static final String MESSAGE_RESPONSE = "messageResponse";
 
-
+    public static final int VIP_0 = 0;
+    public static final int VIP_1 = 1;
+    public static final int VIP_2 = 2;
+    public static final int VIP_3 = 3;
+    public static final int VIP_5 = 5;
 }

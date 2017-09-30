@@ -1,5 +1,10 @@
 package com.test.impl;
 
+import com.gargoylesoftware.htmlunit.ScriptResult;
+import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import com.gargoylesoftware.htmlunit.html.HtmlSubmitInput;
 import com.test.Constants;
 import com.test.CrawlerService;
 import com.test.MuaBanNhaDatService;
@@ -69,8 +74,11 @@ public class MuaBanNhaDatServiceImpl implements CrawlerService, MuaBanNhaDatServ
     @Override
     public void doCrawler() throws Exception {
         List<CategoryDTO> categoryDTOs = categoryManagementBean.findAll(true);
+        int addNew = 0;
+        int exists = 0;
+        int error = 0;
         for(CategoryDTO categoryDTO : categoryDTOs){
-            for(int i = 0; i < crawlerDeep(); i++){
+            for(int i = 1; i < crawlerDeep(); i++){
                 if(StringUtils.isNotBlank(categoryDTO.getMuabannhadatUrl())){
                     String url = categoryDTO.getMuabannhadatUrl() + (i > 1 ? "?p=" + i : "");
                     logger.info("--- Gathering: " + url);
@@ -78,8 +86,11 @@ public class MuaBanNhaDatServiceImpl implements CrawlerService, MuaBanNhaDatServ
                     logger.info("--- Processing list: " + items.size());
                     try {
                         Integer[] saveInfos = productManagementBean.saveOrUpdate(categoryDTO.getCategoryId(), items);
+                        addNew += saveInfos[0];
+                        exists += saveInfos[1];
+                        error += saveInfos[2];
                         logger.info("--- Result ----");
-                        logger.info("--->> [saved: " + saveInfos[0] + ", exists: " + saveInfos[1] + ", error: " + saveInfos[2] + "]");
+                        logger.info("--->> [saved: " + saveInfos[0] + ", exists: " + saveInfos[1] + ", error: " + saveInfos[2] + "] " + url);
                     }catch (Exception e){
                         logger.info(e.getMessage());
                         continue;
@@ -87,12 +98,8 @@ public class MuaBanNhaDatServiceImpl implements CrawlerService, MuaBanNhaDatServ
                 }
             }
             categoryManagementBean.updateCrawlerStatus(categoryDTO.getCategoryId(), Constants.CRAWLER_DONE);
-
         }
-
-       /* String url = "http://www.muabannhadat.vn/nha-ban-3513";
-        logger.info("--- Gathering: " + url);
-        List<BatDongSanDTO> items = gatherInfo(url);*/
+        productManagementBean.updateCrawlerHistory(crawlerUrl(), addNew, exists, error);
     }
 
     @Override
@@ -229,11 +236,17 @@ public class MuaBanNhaDatServiceImpl implements CrawlerService, MuaBanNhaDatServ
         List<BatDongSanDTO> items = new ArrayList<BatDongSanDTO>();
         try{
             Document doc = Jsoup.connect(url).userAgent(Constants.userAgent).get();
-            Elements searchProductItems = doc.getElementsByClass("resultItem");
-
+            //Elements searchProductItems = doc.getElementsByClass("resultItem");
+            Elements searchProductItems = doc.getElementsByClass("listing-item");
             for (Element searchProductItem : searchProductItems) {
-                BatDongSanDTO batDongSanDTO = getBrief(searchProductItem);
+                Element aProduct = searchProductItem.select("div.resultItem").get(0);
+                BatDongSanDTO batDongSanDTO = getBrief(aProduct);
                 batDongSanDTO.setHref(url);
+                if(searchProductItem.hasClass("Product-TopListing")){
+                    batDongSanDTO.setVip(Constants.VIP_1);
+                }else{
+                    batDongSanDTO.setVip(Constants.VIP_5);
+                }
                 items.add(batDongSanDTO);
             }
         }catch (Exception e){
@@ -243,14 +256,15 @@ public class MuaBanNhaDatServiceImpl implements CrawlerService, MuaBanNhaDatServ
     }
 
     private BatDongSanDTO getBrief(Element searchProductItem){
+        BatDongSanDTO batDongSanDTO = new BatDongSanDTO();
         String pTitle = searchProductItem.select("div.row.title").select("a.title-filter-link").text();
         String href = searchProductItem.select("div.row.title").select("a.title-filter-link").attr("href");
         String brief = searchProductItem.select("div.lline").select("div.col-xs-12.hidden-xs.hidden-sm.cusshort").text();
         String backGroundImg = searchProductItem.select("div.listing-list-img").select("div.image-list").attr("style");
         String pThumb = backGroundImg.substring( backGroundImg.indexOf("http://"), backGroundImg.indexOf(")"));
         String pPrice = searchProductItem.select("div.col-md-3.text-right.listing-price").text();
+        String productType = searchProductItem.select("div.listing-list-img").select("div.image-list").select("div.type-product-text").text();
 
-        BatDongSanDTO batDongSanDTO = new BatDongSanDTO();
         batDongSanDTO.setTitle(pTitle);
         batDongSanDTO.setHref(crawlerUrl() + href);
         batDongSanDTO.setThumb(pThumb.trim().replace("'", ""));
@@ -300,6 +314,21 @@ public class MuaBanNhaDatServiceImpl implements CrawlerService, MuaBanNhaDatServ
             }else if(lienHe.hasClass("phone-contact")){
                 Elements aElement = lienHe.getElementsByAttribute("data-phoneext");
                 String productId = aElement.attr("data-phoneext");
+                try {
+                /*    WebClient detailPage = new WebClient();
+                    detailPage.getCurrentWindow().getEnclosedPage();
+                    detailPage.waitForBackgroundJavaScript(5000);
+                    detailPage.getOptions().setThrowExceptionOnScriptError(false);
+                    detailPage.getOptions().setThrowExceptionOnFailingStatusCode(false);
+                    HtmlPage page = detailPage.getPage(fullUrl);
+                    HtmlAnchor input = page.getFirstByXPath("//a[@data-phoneext='" + productId + "']");
+                    HtmlPage nPage = input.click();
+                    ScriptResult result = nPage.executeJavaScript("showphone(this,6185041)");
+                    HtmlAnchor ninput = nPage.getFirstByXPath("//a[@data-phoneext='" + productId + "']");
+                    dto.setContactPhone(ninput.getTextContent());*/
+                }catch (Exception ex){
+                    ex.printStackTrace();
+                }
                 /*Document doc1 = Jsoup.connect("http://www.muabannhadat.vn/Services/Tracking/" + productId + "/GetPhoneCustom")
                         .userAgent(Constants.userAgent)
                         .post();

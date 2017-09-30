@@ -20,6 +20,7 @@ public class CategoryEntity {
     private String name;
     private String batdongsanUrl;
     private String muabannhadatUrl;
+    private String dothiUrl;
     private Integer active;
     private Integer crawled;
 
@@ -92,5 +93,15 @@ public class CategoryEntity {
 
     public void setBatdongsanUrl(String batdongsanUrl) {
         this.batdongsanUrl = batdongsanUrl;
+    }
+
+    @javax.persistence.Column(name = "DothiUrl")
+    @javax.persistence.Basic
+    public String getDothiUrl() {
+        return dothiUrl;
+    }
+
+    public void setDothiUrl(String dothiUrl) {
+        this.dothiUrl = dothiUrl;
     }
 }

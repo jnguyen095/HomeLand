@@ -1,17 +1,14 @@
-package com.test.domain;
+package com.test.dto;
 
-import javax.persistence.*;
+import java.io.Serializable;
 
 /**
- * Created with IntelliJ IDEA.
- * User: nkhang
- * Date: 10/15/15
- * Time: 10:25 AM
- * To change this template use File | Settings | File Templates.
+ * Created by Khang Nguyen.
+ * Email: khang.nguyen@banvien.com
+ * Date: 9/22/2017
+ * Time: 5:56 PM
  */
-@javax.persistence.Table(name = "brand")
-@Entity
-public class BrandEntity {
+public class BrandDTO implements Serializable {
     private Integer brandId;
     private String brandName;
     private String description;
@@ -23,10 +20,6 @@ public class BrandEntity {
     private String price;
     private String detail;
 
-
-    @javax.persistence.Column(name = "BrandID")
-    @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
     public Integer getBrandId() {
         return brandId;
     }
@@ -35,8 +28,6 @@ public class BrandEntity {
         this.brandId = brandId;
     }
 
-    @javax.persistence.Column(name = "BrandName")
-    @Basic
     public String getBrandName() {
         return brandName;
     }
@@ -45,8 +36,6 @@ public class BrandEntity {
         this.brandName = brandName;
     }
 
-    @javax.persistence.Column(name = "Description", columnDefinition = "TEXT")
-    @Basic
     public String getDescription() {
         return description;
     }
@@ -55,8 +44,6 @@ public class BrandEntity {
         this.description = description;
     }
 
-    @javax.persistence.Column(name = "Thumb")
-    @Basic
     public String getThumb() {
         return thumb;
     }
@@ -65,8 +52,6 @@ public class BrandEntity {
         this.thumb = thumb;
     }
 
-    @javax.persistence.Column(name = "BizType")
-    @Basic
     public String getBizType() {
         return bizType;
     }
@@ -75,8 +60,6 @@ public class BrandEntity {
         this.bizType = bizType;
     }
 
-    @javax.persistence.Column(name = "Owner")
-    @Basic
     public String getOwner() {
         return owner;
     }
@@ -85,8 +68,6 @@ public class BrandEntity {
         this.owner = owner;
     }
 
-    @javax.persistence.Column(name = "Process")
-    @Basic
     public String getProcess() {
         return process;
     }
@@ -95,8 +76,6 @@ public class BrandEntity {
         this.process = process;
     }
 
-    @javax.persistence.Column(name = "Area")
-    @Basic
     public String getArea() {
         return area;
     }
@@ -105,8 +84,6 @@ public class BrandEntity {
         this.area = area;
     }
 
-    @javax.persistence.Column(name = "Price")
-    @Basic
     public String getPrice() {
         return price;
     }
@@ -115,8 +92,6 @@ public class BrandEntity {
         this.price = price;
     }
 
-    @javax.persistence.Column(name = "Detail", columnDefinition = "TEXT")
-    @Basic
     public String getDetail() {
         return detail;
     }

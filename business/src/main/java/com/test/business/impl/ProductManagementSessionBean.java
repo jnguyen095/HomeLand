@@ -88,29 +88,20 @@ public class ProductManagementSessionBean implements ProductManagementRemoteBean
         result[0] = saved;
         result[1] = exists;
         result[2] = error;
-        updateCrawlerHistory(categoryId, saved, exists, error);
         return result;
     }
 
-    private void updateCrawlerHistory(Integer categoryId, Integer saved, Integer exists, Integer error){
+    @Override
+    public void updateCrawlerHistory(String siteUrl, Integer saved, Integer exists, Integer error){
         try{
-            CrawlerHistoryEntity crawlerHistoryEntity = crawlerHistoryLocalBean.findToday(categoryId);
-            if(crawlerHistoryEntity != null){
-                crawlerHistoryEntity.setAdded(crawlerHistoryEntity.getAdded() + saved);
-                crawlerHistoryEntity.setUpdated(0);
-                crawlerHistoryEntity.setError(crawlerHistoryEntity.getError() + error);
-                crawlerHistoryEntity.setUpdatedDate(crawlerHistoryEntity.getUpdatedDate());
-                crawlerHistoryLocalBean.update(crawlerHistoryEntity);
-            }else{
-                crawlerHistoryEntity = new CrawlerHistoryEntity();
-                crawlerHistoryEntity.setAdded(saved);
-                crawlerHistoryEntity.setUpdated(0);
-                crawlerHistoryEntity.setError(error);
-                CategoryEntity categoryEntity = new CategoryEntity();
-                categoryEntity.setCategoryId(categoryId);
-                crawlerHistoryEntity.setCategory(categoryEntity);
-                crawlerHistoryLocalBean.save(crawlerHistoryEntity);
-            }
+            CrawlerHistoryEntity crawlerHistoryEntity = new CrawlerHistoryEntity();
+            crawlerHistoryEntity = new CrawlerHistoryEntity();
+            crawlerHistoryEntity.setAdded(saved);
+            crawlerHistoryEntity.setSkip(exists);
+            crawlerHistoryEntity.setError(error);
+            crawlerHistoryEntity.setSiteUrl(siteUrl);
+            crawlerHistoryEntity.setCrawlerDate(new Timestamp(System.currentTimeMillis()));
+            crawlerHistoryLocalBean.save(crawlerHistoryEntity);
         }catch (Exception e){
             e.printStackTrace();
         }

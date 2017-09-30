@@ -15,4 +15,5 @@ import java.util.List;
 @Remote
 public interface ProductManagementRemoteBean {
     Integer[] saveOrUpdate(Integer categoryId, List<BatDongSanDTO> items);
+    void updateCrawlerHistory(String siteUrl, Integer saved, Integer exists, Integer error);
 }

@@ -33,6 +33,7 @@ public class ProductEntity {
     private Integer view;
     private UnitEntity unit;
     private String address;
+    private Integer vip;
 
     @javax.persistence.Column(name = "ProductID")
     @Id
@@ -231,5 +232,15 @@ public class ProductEntity {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    @javax.persistence.Column(name = "Vip")
+    @Basic
+    public Integer getVip() {
+        return vip;
+    }
+
+    public void setVip(Integer vip) {
+        this.vip = vip;
     }
 }

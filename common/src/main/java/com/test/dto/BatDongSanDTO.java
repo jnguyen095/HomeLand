@@ -40,6 +40,7 @@ public class BatDongSanDTO implements Serializable {
     private String streetString;
     private String source;
     private String unitString;
+    private Integer vip;
 
 
     private String contactName;
@@ -309,5 +310,13 @@ public class BatDongSanDTO implements Serializable {
 
     public void setUnitString(String unitString) {
         this.unitString = unitString;
+    }
+
+    public Integer getVip() {
+        return vip;
+    }
+
+    public void setVip(Integer vip) {
+        this.vip = vip;
     }
 }

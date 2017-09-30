@@ -37,6 +37,7 @@ public class ProductDTO implements Serializable {
     private Timestamp expireDate;
     private Timestamp postDate;
     private CategoryDTO category;
+    private Integer vip;
 
     public Integer getProductId() {
         return productId;
@@ -244,5 +245,13 @@ public class ProductDTO implements Serializable {
 
     public void setCategory(CategoryDTO category) {
         this.category = category;
+    }
+
+    public Integer getVip() {
+        return vip;
+    }
+
+    public void setVip(Integer vip) {
+        this.vip = vip;
     }
 }

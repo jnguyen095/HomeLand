@@ -3,10 +3,7 @@ package com.test.impl;
 import com.test.BatDongSanService;
 import com.test.Constants;
 import com.test.CrawlerService;
-import com.test.business.CategoryManagementRemoteBean;
-import com.test.business.NewsManagementRemoteBean;
-import com.test.business.ProductManagementRemoteBean;
-import com.test.business.SampleHouseManagementRemoteBean;
+import com.test.business.*;
 import com.test.dto.*;
 import com.test.utils.EmailValidator;
 import org.apache.commons.lang.StringUtils;
@@ -43,6 +40,11 @@ public class BatDongSanServiceImpl implements CrawlerService, BatDongSanService 
     private CategoryManagementRemoteBean categoryManagementBean;
     private NewsManagementRemoteBean newsManagementBean;
     private SampleHouseManagementRemoteBean sampleHouseManagementBean;
+    private BranchManagementRemoteBean branchManagementRemoteBean;
+
+    public void setBranchManagementRemoteBean(BranchManagementRemoteBean branchManagementRemoteBean) {
+        this.branchManagementRemoteBean = branchManagementRemoteBean;
+    }
 
     public void setSampleHouseManagementBean(SampleHouseManagementRemoteBean sampleHouseManagementBean) {
         this.sampleHouseManagementBean = sampleHouseManagementBean;
@@ -73,32 +75,30 @@ public class BatDongSanServiceImpl implements CrawlerService, BatDongSanService 
     @Override
     public void doCrawler() throws Exception{
         List<CategoryDTO> categoryDTOs = categoryManagementBean.findAll(true);
+        int addNew = 0;
+        int exists = 0;
+        int error = 0;
         for(CategoryDTO categoryDTO : categoryDTOs){
-            for(int i = 0; i < crawlerDeep(); i++){
+            for(int i = 1; i < crawlerDeep(); i++){
                 String url = categoryDTO.getBatdongsanUrl() + (i > 1 ? "/p" + i : "");
                 logger.info("--- Gathering: " + url);
                 List<BatDongSanDTO> items = gatherInfo(url);
                 logger.info("--- Processing list: " + items.size());
                 try {
                     Integer[] saveInfos = productManagementBean.saveOrUpdate(categoryDTO.getCategoryId(), items);
+                    addNew += saveInfos[0];
+                    exists += saveInfos[1];
+                    error += saveInfos[2];
                     logger.info("--- Result ----");
-                    logger.info("--->> [saved: " + saveInfos[0] + ", exists: " + saveInfos[1] + ", error: " + saveInfos[2] + "]");
+                    logger.info("--->> [saved: " + saveInfos[0] + ", exists: " + saveInfos[1] + ", error: " + saveInfos[2] + "] " + url);
                 }catch (Exception e){
                     logger.info(e.getMessage());
                     continue;
                 }
             }
             categoryManagementBean.updateCrawlerStatus(categoryDTO.getCategoryId(), Constants.CRAWLER_DONE);
-
         }
-
-        for(int i = 1; i < 5; i++){
-            String testUrl = "http://batdongsan.com.vn/ban-nha-rieng-tp-hcm" + (i > 1 ? "/p" + i : "");
-            //List<BatDongSanDTO> items = gatherInfo(testUrl);
-            //productManagementBean.saveOrUpdate(items);
-           //listItems.addAll(items);
-        }
-
+        productManagementBean.updateCrawlerHistory(crawlerUrl(), addNew, exists, error);
     }
 
     @Override
@@ -144,6 +144,46 @@ public class BatDongSanServiceImpl implements CrawlerService, BatDongSanService 
         }
         if(trees != null){
             categoryManagementBean.updateMainCategory(trees);
+        }
+    }
+
+    @Override
+    public void crawlerBranch() {
+        List<BrandDTO> branchs = branchManagementRemoteBean.findAll();
+        for(BrandDTO dto : branchs){
+            String url = "https://batdongsan.com.vn/phan-muc-cac-du-an-bds?k=" + dto.getBrandName().replace(" ", "+");
+            try{
+                Document doc = Jsoup.connect(url).userAgent(Constants.userAgent).get();
+                Elements elements = doc.getElementsByClass("list-view").select("li");
+                for(int i = 0; i < elements.size(); i++){
+                    Element element = elements.get(i);
+                    String href = element.select("div.thumb").select("a").attr("href");
+                    String thumb = element.select("div.thumb").select("a").select("img").attr("src");
+                    String address = element.select("div.detail").select("div.add").text();
+                    String price = element.select("div.detail").select("span.price").text();
+                    String investor = element.select("div.detail").select("div.investor").text().split(":")[1].trim();
+                    String area = element.select("div.detail").select("div.area").text().split(":")[1].trim();
+                    String progress = element.select("div.detail").select("div.prgrs").text().split(":")[1].trim();
+                    if (!href.contains("http")) {
+                        href = crawlerUrl() + href;
+                    }
+                    Document doc1 = Jsoup.connect(href).userAgent(Constants.userAgent).get();
+                    String detail = doc1.getElementsByClass("prj-noidung").html();
+
+                    dto.setThumb(thumb);
+                    dto.setDescription(address);
+                    dto.setArea(area);
+                    dto.setPrice(price);
+                    dto.setOwner(investor);
+                    dto.setProcess(progress);
+                    dto.setDetail(detail);
+
+                    branchManagementRemoteBean.update(dto);
+                }
+            }catch (Exception e){
+                logger.info("------ error: " + url + " ------");
+                logger.info(e.getMessage());
+            }
         }
     }
 
@@ -285,6 +325,15 @@ public class BatDongSanServiceImpl implements CrawlerService, BatDongSanService 
 
             for (Element searchProductItem : searchProductItems) {
                 BatDongSanDTO batDongSanDTO = getBrief(searchProductItem);
+                if(searchProductItem.hasClass("vip0")){
+                    batDongSanDTO.setVip(Constants.VIP_1);
+                }else if(searchProductItem.hasClass("vip1")){
+                    batDongSanDTO.setVip(Constants.VIP_2);
+                }else if(searchProductItem.hasClass("vip2")){
+                    batDongSanDTO.setVip(Constants.VIP_3);
+                }else{
+                    batDongSanDTO.setVip(Constants.VIP_5);
+                }
                 batDongSanDTO.setHref(url);
                 items.add(batDongSanDTO);
             }

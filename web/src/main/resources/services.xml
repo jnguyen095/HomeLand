@@ -16,6 +16,7 @@
     <jee:local-slsb jndi-name="java:app/business-module-1.0/UserManagementSessionEJB!com.test.business.UserManagementLocalBean" business-interface="com.test.business.UserManagementLocalBean" id="userManagementLocalBean"/>
     <jee:local-slsb jndi-name="java:app/business-module-1.0/NewsManagementSessionEJB!com.test.business.NewsManagementLocalBean" business-interface="com.test.business.NewsManagementLocalBean" id="newsManagementLocalBean"/>
     <jee:local-slsb jndi-name="java:app/business-module-1.0/SampleHouseManagementSessionEJB!com.test.business.SampleHouseManagementLocalBean" business-interface="com.test.business.SampleHouseManagementLocalBean" id="sampleHouseManagementLocalBean"/>
+    <jee:local-slsb jndi-name="java:app/business-module-1.0/BranchManagementSessionEJB!com.test.business.BranchManagementLocalBean" business-interface="com.test.business.BranchManagementLocalBean" id="branchManagementLocalBean"/>
 
     <bean id="userSecurityAdvice" class="com.test.security.MyUserDetailService">
     </bean>
