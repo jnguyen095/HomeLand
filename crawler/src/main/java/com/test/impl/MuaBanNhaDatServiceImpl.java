@@ -360,8 +360,8 @@ public class MuaBanNhaDatServiceImpl implements CrawlerService, MuaBanNhaDatServ
             }
         }
         String ward = doc.getElementById("MainContent_ctlDetailBox_lblWard").text();
-        String district = doc.getElementById("MainContent_ctlDetailBox_lblDistrict").text();
-        String city = doc.getElementById("MainContent_ctlDetailBox_lblCity").text();
+        String district = doc.getElementById("MainContent_ctlDetailBox_lblDistrict").text().replace("Quận", "").trim();
+        String city = doc.getElementById("MainContent_ctlDetailBox_lblCity").text().replace("TP.", "").trim();
         String street = doc.getElementById("MainContent_ctlDetailBox_lblStreet").text();
 
         dto.setAddress((StringUtils.isNotBlank(street) ? street + ", " : "") + (StringUtils.isNotBlank(ward) ? ward + ", " : "") + (StringUtils.isNotBlank(district) ? district + ", " : "") + (StringUtils.isNotBlank(city) ? city + ", " : ""));
@@ -404,7 +404,7 @@ public class MuaBanNhaDatServiceImpl implements CrawlerService, MuaBanNhaDatServ
         if(StringUtils.isNotBlank(areaStr)){
             String[] strs = areaStr.split(" ");
             if(strs.length > 1){
-                String val = strs[0];
+                String val = strs[0].trim();
                 if(NumberUtils.isNumber(val)){
                     return val;
                 }

@@ -394,7 +394,7 @@ public class BatDongSanServiceImpl implements CrawlerService, BatDongSanService 
         if(StringUtils.isNotBlank(areaStr)){
             String[] strs = areaStr.split(" ");
             if(strs.length > 1){
-                String val = strs[0];
+                String val = strs[0].trim();
                 if(NumberUtils.isNumber(val)){
                     return val;
                 }
