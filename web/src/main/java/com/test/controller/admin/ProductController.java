@@ -38,6 +38,7 @@ public class ProductController extends ApplicationObjectSupport{
         ModelAndView mav = new ModelAndView("admin/product/product-list");
         executeSearch(command, request);
         mav.addObject(Constants.LIST_MODEL_KEY, command);
+        productManagementLocalBean.mergeProduct(105, 55);
         return mav;
     }
 

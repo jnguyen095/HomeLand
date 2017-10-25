@@ -4,6 +4,7 @@ import com.test.domain.CityEntity;
 import com.test.session.CityLocalBean;
 
 import javax.ejb.Stateless;
+import javax.persistence.Query;
 
 /**
  * Created with IntelliJ IDEA.
@@ -14,4 +15,11 @@ import javax.ejb.Stateless;
  */
 @Stateless(name = "CitySessionEJB")
 public class CitySessionBean extends AbstractSessionBean<CityEntity, Long> implements CityLocalBean{
+    @Override
+    public CityEntity findByName(String city) {
+        StringBuffer sql = new StringBuffer("FROM CityEntity ct where LOWER(ct.cityName) = :cityName");
+        Query query = entityManager.createQuery(sql.toString());
+        query.setParameter("cityName", city.toLowerCase());
+        return query.getResultList().size() > 0 ? (CityEntity) query.getResultList().get(0) : null;
+    }
 }

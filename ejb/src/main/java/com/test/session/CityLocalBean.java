@@ -13,4 +13,5 @@ import javax.ejb.Local;
  */
 @Local
 public interface CityLocalBean extends GenericSessionBean<CityEntity, Long>{
+    CityEntity findByName(String city);
 }

@@ -4,6 +4,8 @@ import com.test.domain.DistrictEntity;
 import com.test.session.DistrictLocalBean;
 
 import javax.ejb.Stateless;
+import javax.persistence.Query;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -14,4 +16,20 @@ import javax.ejb.Stateless;
  */
 @Stateless(name = "DistrictSessionEJB")
 public class DistrictSessionBean extends AbstractSessionBean<DistrictEntity, Long> implements DistrictLocalBean{
+    @Override
+    public List<DistrictEntity> findByCityId(long cityId) {
+        StringBuffer sql = new StringBuffer("FROM DistrictEntity dt WHERE dt.city.cityId = :CityID");
+        Query query = entityManager.createQuery(sql.toString());
+        query.setParameter("CityID", cityId);
+        return query.getResultList();
+    }
+
+    @Override
+    public DistrictEntity findByNameAndCityId(String district, Integer cityId) {
+        StringBuffer sql = new StringBuffer("FROM DistrictEntity dt WHERE dt.city.cityId = :CityID and LOWER(dt.districtName) = :districtName");
+        Query query = entityManager.createQuery(sql.toString());
+        query.setParameter("CityID", cityId);
+        query.setParameter("districtName", district.toLowerCase());
+        return query.getResultList().size() > 0 ? (DistrictEntity) query.getResultList().get(0) : null;
+    }
 }

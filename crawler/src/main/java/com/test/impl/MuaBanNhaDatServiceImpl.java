@@ -360,7 +360,7 @@ public class MuaBanNhaDatServiceImpl implements CrawlerService, MuaBanNhaDatServ
             }
         }
         String ward = doc.getElementById("MainContent_ctlDetailBox_lblWard").text();
-        String district = doc.getElementById("MainContent_ctlDetailBox_lblDistrict").text().replace("Quận", "").trim();
+        String district = doc.getElementById("MainContent_ctlDetailBox_lblDistrict").text().trim();
         String city = doc.getElementById("MainContent_ctlDetailBox_lblCity").text().replace("TP.", "").trim();
         String street = doc.getElementById("MainContent_ctlDetailBox_lblStreet").text();
 

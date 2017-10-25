@@ -13,4 +13,5 @@ import java.util.Map;
 @Local
 public interface ProductManagementLocalBean {
     Object[] searchByProperties(Map<String,Object> properties, String sortExpression, String sortDirection, int firstItem, int maxPageItems);
+    void mergeProduct(long city1, long city2);
 }

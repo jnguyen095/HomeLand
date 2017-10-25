@@ -3,6 +3,7 @@ package com.test.session;
 import com.test.domain.DistrictEntity;
 
 import javax.ejb.Local;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -13,4 +14,7 @@ import javax.ejb.Local;
  */
 @Local
 public interface DistrictLocalBean extends GenericSessionBean<DistrictEntity, Long>{
+    List<DistrictEntity> findByCityId(long city1);
+
+    DistrictEntity findByNameAndCityId(String district, Integer cityId);
 }

@@ -10,10 +10,7 @@ import com.test.utils.DozerSingletonMapper;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
 
-import javax.ejb.DuplicateKeyException;
-import javax.ejb.EJB;
-import javax.ejb.ObjectNotFoundException;
-import javax.ejb.Stateless;
+import javax.ejb.*;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -64,6 +61,7 @@ public class ProductManagementSessionBean implements ProductManagementRemoteBean
     public Integer[] saveOrUpdate(Integer categoryId, List<BatDongSanDTO> items) {
         int saved = 0, exists = 0, error = 0;
         for(BatDongSanDTO batDongSanDTO : items){
+            batDongSanDTO = validateData(batDongSanDTO);
             Boolean isExists = productLocalBean.findByCode(batDongSanDTO.getCode());
             if(!isExists){
                 Boolean ok = validateRequired(batDongSanDTO);
@@ -148,8 +146,11 @@ public class ProductManagementSessionBean implements ProductManagementRemoteBean
         if(StringUtils.isNotBlank(batDongSanDTO.getCityDist())){
             String[] strs = batDongSanDTO.getCityDist().split(",");
             if(strs.length == 2){
-                String city = strs[1].trim();
-                String district = strs[0].trim();
+                String city = strs[1].replace("TP.", "").replace("Thành phố", "").replace("thành phố", "").replace("Thành Phố", "").replace("Tp.", "").replace("tp.", "").trim();
+                String district = strs[0].replace("Quận", "").replace("Huyện", "").replace("Thị xã", "").replace("Thị Xã", "").replace("Tp.", "").replace("TP.", "").replace("tp.", "").replace("Thành phố", "").replace("thành phố", "").replace("Thành Phố", "").trim();
+                if(StringUtils.isNumeric(district)){
+                    district = strs[0].replace("Huyện", "").replace("Thị xã", "").replace("Thị Xã", "").trim();
+                }
                 CityEntity cityEntity = saveOrLoadCity(city);
                 if(cityEntity != null){
                     productEntity.setCity(cityEntity);
@@ -252,6 +253,7 @@ public class ProductManagementSessionBean implements ProductManagementRemoteBean
         WardEntity wardEntity = null;
         if(StringUtils.isNotBlank(ward)){
             try{
+                ward = ward.replace("Phường", "").replace("phường", "").replace("Xã", "").replace("xã", "").trim();
                 wardEntity = wardLocalBean.findEqualUnique("wardName", ward);
             }catch (ObjectNotFoundException e){
                 wardEntity = new WardEntity();
@@ -295,9 +297,8 @@ public class ProductManagementSessionBean implements ProductManagementRemoteBean
 
     private DistrictEntity saveOrLoadDistrict(CityEntity city, String district) {
         DistrictEntity districtEntity = null;
-        try{
-            districtEntity = districtLocalBean.findEqualUnique("districtName", district);
-        }catch (ObjectNotFoundException e){
+        districtEntity = districtLocalBean.findByNameAndCityId(district, city.getCityId());
+        if(districtEntity == null){
             districtEntity = new DistrictEntity();
             districtEntity.setDistrictName(district);
             districtEntity.setCity(city);
@@ -310,14 +311,23 @@ public class ProductManagementSessionBean implements ProductManagementRemoteBean
 
     private CityEntity saveOrLoadCity(String city){
         CityEntity cityEntity = null;
-        try{
-            cityEntity = cityLocalBean.findEqualUnique("cityName", city);
-        }catch (ObjectNotFoundException e){
-            cityEntity = new CityEntity();
-            cityEntity.setCityName(city);
-            try{
-                cityEntity = cityLocalBean.save(cityEntity);
-            }catch (DuplicateKeyException de){}
+        cityEntity = cityLocalBean.findByName(city);
+        if(cityEntity == null){
+            if(city.equals("Hà Nội") || city.equalsIgnoreCase("Hà Nội") || (city.length() == 6 && !city.toLowerCase().contains("nam")) ){
+                try {
+                    cityEntity = cityLocalBean.findEqualUnique("cityName", "Hà Nội");
+                }catch (ObjectNotFoundException e){}
+            }else if(city.equals("Hà Nội")){
+
+            }
+            if(cityEntity == null){
+                cityEntity = new CityEntity();
+                cityEntity.setCityName(city);
+                try{
+                    cityEntity = cityLocalBean.save(cityEntity);
+                }catch (DuplicateKeyException de){}
+            }
+
         }
         return cityEntity;
     }
@@ -335,4 +345,43 @@ public class ProductManagementSessionBean implements ProductManagementRemoteBean
         result[1] = productDTOs;
         return result;
     }
+
+    @Override
+    public void mergeProduct(long city1, long city2) {
+        List<DistrictEntity> allDistricts = districtLocalBean.findAll();
+        List<Integer> deleteWardIds = new ArrayList<>();
+        for(DistrictEntity districtEntity : allDistricts){
+            List<WardEntity> wards = wardLocalBean.findByDistrictId(districtEntity.getDistrictId());
+            for(WardEntity wardEntity : wards){
+                if(wardEntity.getWardName().toLowerCase().startsWith("phường")){
+                    String searchName = wardEntity.getWardName().replace("Phường", "").replace("phường", "").trim();
+                    try{
+                        List<WardEntity> findWards = (List<WardEntity>) wardLocalBean.findProperty("wardName", searchName);
+                        if(findWards.size() > 0) {
+                            //if (findWards.get(0).getDistrict().getDistrictId().equals(wardEntity.getDistrict().getDistrictId())) {
+                                productLocalBean.updateNewWard4Product(wardEntity.getWardId(), findWards.get(0).getWardId(), wardEntity.getDistrict().getDistrictId());
+                                deleteWardIds.add(wardEntity.getWardId());
+                            //}
+                        }
+                    }catch (Exception e){
+                        continue;
+                    }
+                }
+            }
+        }
+
+        if(deleteWardIds.size() > 0){
+            wardLocalBean.deleteByListIds(deleteWardIds);
+        }
+
+
+    }
+
+
+    private BatDongSanDTO validateData(BatDongSanDTO dto){
+        BatDongSanDTO result = dto;
+        return result;
+    }
+
+
 }
