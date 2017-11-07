@@ -1,4 +1,6 @@
+import com.test.CafeLandService;
 import com.test.impl.BatDongSanServiceImpl;
+import com.test.impl.CafeLandServiceImpl;
 import com.test.impl.DothiServiceImpl;
 import com.test.impl.MuaBanNhaDatServiceImpl;
 import org.springframework.context.ApplicationContext;
@@ -17,6 +19,7 @@ public class Run {
         BatDongSanServiceImpl batDongSanService = (BatDongSanServiceImpl)context.getBean("batDongSanService");
         MuaBanNhaDatServiceImpl muaBanNhaDatService = (MuaBanNhaDatServiceImpl)context.getBean("muaBanNhaDatService");
         DothiServiceImpl dothiService = (DothiServiceImpl)context.getBean("dothiService");
+        CafeLandServiceImpl cafeLandService = (CafeLandServiceImpl)context.getBean("cafeLandService");
         try{
             // Crawler category first, if didn't before
             // batDongSanService.updateMainCategory();
@@ -35,12 +38,14 @@ public class Run {
             // Crawler dothi.net
             // dothiService.doCrawler();
 
-            MyThread th1 = new MyThread(batDongSanService);
+            /*MyThread th1 = new MyThread(batDongSanService);
             th1.start();
             MyThread th2 = new MyThread(muaBanNhaDatService);
             th2.start();
             MyThread th3 = new MyThread(dothiService);
-            th3.start();
+            th3.start();*/
+            MyThread th4 = new MyThread(cafeLandService);
+            th4.start();
 
 
         }catch (Exception e){

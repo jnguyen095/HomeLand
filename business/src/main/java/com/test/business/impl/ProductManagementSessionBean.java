@@ -14,10 +14,7 @@ import javax.ejb.*;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -184,7 +181,10 @@ public class ProductManagementSessionBean implements ProductManagementRemoteBean
         if(StringUtils.isNotBlank(batDongSanDTO.getExpireDateStr())) {
             productEntity.setExpireDate(parseDate(batDongSanDTO.getExpireDateStr()));
         }else{
-            productEntity.setExpireDate(productEntity.getPostDate());
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(productEntity.getPostDate());
+            cal.add(Calendar.MONTH, 1);
+            productEntity.setExpireDate(new Timestamp(cal.getTime().getTime()));
         }
         productEntity.setView(0);
 
@@ -311,6 +311,7 @@ public class ProductManagementSessionBean implements ProductManagementRemoteBean
 
     private CityEntity saveOrLoadCity(String city){
         CityEntity cityEntity = null;
+        city = city.replace("-", "").replace("  ", " ");
         cityEntity = cityLocalBean.findByName(city);
         if(cityEntity == null){
             if(city.equals("Hà Nội") || city.equalsIgnoreCase("Hà Nội") || (city.length() == 6 && !city.toLowerCase().contains("nam")) ){

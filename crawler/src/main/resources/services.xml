@@ -63,5 +63,12 @@
         <property name="sampleHouseManagementBean" ref="sampleHouseManagementRemoteBean"/>
     </bean>
 
+    <bean id="cafeLandService" class="com.test.impl.CafeLandServiceImpl">
+        <property name="categoryManagementBean" ref="categoryManagementRemoteBean"/>
+        <property name="productManagementBean" ref="productManagementRemoteBean"/>
+        <property name="newsManagementBean" ref="newsManagementRemoteBean"/>
+        <property name="sampleHouseManagementBean" ref="sampleHouseManagementRemoteBean"/>
+    </bean>
+
 </beans>
 

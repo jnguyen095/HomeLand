@@ -82,7 +82,7 @@ public class DothiServiceImpl implements CrawlerService, DothiService {
                     String[] strs = getUrlandExtentionOfUrl(orgUrl);
                     String extention = strs[1];
                     String bUrl = strs[0];
-                    String url = bUrl + (i > 1 ? "/p" + i + "." + extention : "." + extention);
+                    String url = bUrl + (i > 1 ? "/page-" + i + "." + extention : "." + extention);
                     logger.info("--- Gathering: " + url);
                     List<BatDongSanDTO> items = gatherInfo(url);
                     logger.info("--- Processing list: " + items.size());
