@@ -240,94 +240,101 @@ public class DothiServiceImpl implements CrawlerService, DothiService {
     }
 
     private void updateDetail(String fullUrl, BatDongSanDTO dto) throws Exception{
-        Document doc = Jsoup.connect(fullUrl).userAgent(Constants.userAgent).timeout(5000).get();
-        String detail = doc.getElementsByClass("pd-desc").html();
-        String areaString = doc.getElementById("ContentPlaceHolder1_ProductDetail1_divprice").getElementsByTag("span").get(1).text();
-        String pPrice = doc.getElementsByClass("spanprice").text().trim();
-        dto.setPriceString(pPrice);
-        Object[] objects = getPriceFromString(pPrice);
-        dto.setPrice(objects != null ? (Float)objects[0] : -1);
-        dto.setUnitString(objects != null ? (String)objects[1]: "");
-        dto.setArea(getAreaFromString(areaString));
+        try {
+            Document doc = Jsoup.connect(fullUrl).userAgent(Constants.userAgent).timeout(5000).get();
+            String detail = doc.getElementsByClass("pd-desc").html();
+            String areaString = doc.getElementById("ContentPlaceHolder1_ProductDetail1_divprice").getElementsByTag("span").get(1).text();
+            String pPrice = doc.getElementsByClass("spanprice").text().trim();
+            dto.setPriceString(pPrice);
+            Object[] objects = getPriceFromString(pPrice);
+            dto.setPrice(objects != null ? (Float) objects[0] : -1);
+            dto.setUnitString(objects != null ? (String) objects[1] : "");
+            dto.setArea(getAreaFromString(areaString));
 
-        String location = doc.getElementsByClass("pd-location").removeClass("spanlocation").text();
-        String street = doc.getElementsByClass("pd-location").get(0).children().get(1).text().split("tại")[1].trim();
+            String location = doc.getElementsByClass("pd-location").removeClass("spanlocation").text();
+            String street = doc.getElementsByClass("pd-location").get(0).children().get(1).text().split("tại")[1].trim();
 
-        // dac diem
-        Element tableDacDiem = doc.getElementById("tbl1");
-        Elements trDacDiems = tableDacDiem.select("tr");
-        for(int i = 0; i < trDacDiems.size(); i++){
-            Elements tdDacDiems = trDacDiems.get(i).select("td");
-            if(tdDacDiems.size() == 2){
-                String key = tdDacDiems.get(0).text().trim();
-                String value = tdDacDiems.get(1).text().trim();
-                if(key.equalsIgnoreCase("Mã số")){
-                    dto.setCode(value);
-                }else if(key.equalsIgnoreCase("Ngày đăng tin")){
-                    dto.setPostDateStr(value);
-                }else if(key.equalsIgnoreCase("Ngày hết hạn")){
-                    dto.setExpireDateStr(value);
-                }else if(key.equalsIgnoreCase("Hướng nhà")){
-                    dto.setDirectionString(value);
-                }else if(key.equalsIgnoreCase("Số phòng")){
-                    dto.setRoom(value);
-                }else if(key.equalsIgnoreCase("Mặt tiền")){
-                    dto.setWidthSize(value);
-                }else if(key.equalsIgnoreCase("Số tầng")){
-                    dto.setFloor(value);
-                }else if(key.equalsIgnoreCase("Số toilet")){
-                    dto.setToilet(value);
-                }else if(key.equalsIgnoreCase("Số tầng")){
-                    dto.setFloor(value);
+            // dac diem
+            Element tableDacDiem = doc.getElementById("tbl1");
+            Elements trDacDiems = tableDacDiem.select("tr");
+            for (int i = 0; i < trDacDiems.size(); i++) {
+                Elements tdDacDiems = trDacDiems.get(i).select("td");
+                if (tdDacDiems.size() == 2) {
+                    String key = tdDacDiems.get(0).text().trim();
+                    String value = tdDacDiems.get(1).text().trim();
+                    if (key.equalsIgnoreCase("Mã số")) {
+                        dto.setCode(value);
+                    } else if (key.equalsIgnoreCase("Ngày đăng tin")) {
+                        dto.setPostDateStr(value);
+                    } else if (key.equalsIgnoreCase("Ngày hết hạn")) {
+                        dto.setExpireDateStr(value);
+                    } else if (key.equalsIgnoreCase("Hướng nhà")) {
+                        dto.setDirectionString(value);
+                    } else if (key.equalsIgnoreCase("Số phòng")) {
+                        dto.setRoom(value);
+                    } else if (key.equalsIgnoreCase("Mặt tiền")) {
+                        dto.setWidthSize(value);
+                    } else if (key.equalsIgnoreCase("Số tầng")) {
+                        dto.setFloor(value);
+                    } else if (key.equalsIgnoreCase("Số toilet")) {
+                        dto.setToilet(value);
+                    } else if (key.equalsIgnoreCase("Số tầng")) {
+                        dto.setFloor(value);
+                    }
                 }
             }
-        }
 
-        // dac diem
-        Element tableContact = doc.getElementById("tbl2");
-        Elements trContacts = tableContact.select("tr");
-        for(int i = 0; i < trContacts.size(); i++){
-            Elements tdContacts = trContacts.get(i).select("td");
-            if(tdContacts.size() == 2){
-                String key = tdContacts.get(0).text().trim();
-                String value = tdContacts.get(1).text().trim();
-                if(key.equalsIgnoreCase("Tên liên lạc")){
-                    dto.setContactName(value);
-                }else if(key.equalsIgnoreCase("Địa chỉ")){
-                    dto.setContactAddress(value);
-                }else if(key.equalsIgnoreCase("Di động")){
-                    dto.setContactPhone(value);
-                }else if(key.equalsIgnoreCase("Email")){
-                    dto.setContactEmail(tdContacts.get(1).html());
+            // dac diem
+            Element tableContact = doc.getElementById("tbl2");
+            Elements trContacts = tableContact.select("tr");
+            for (int i = 0; i < trContacts.size(); i++) {
+                Elements tdContacts = trContacts.get(i).select("td");
+                if (tdContacts.size() == 2) {
+                    String key = tdContacts.get(0).text().trim();
+                    String value = tdContacts.get(1).text().trim();
+                    if (key.equalsIgnoreCase("Tên liên lạc")) {
+                        dto.setContactName(value);
+                    } else if (key.equalsIgnoreCase("Địa chỉ")) {
+                        dto.setContactAddress(value);
+                    } else if (key.equalsIgnoreCase("Di động")) {
+                        dto.setContactPhone(value);
+                    } else if (key.equalsIgnoreCase("Email")) {
+                        dto.setContactEmail(tdContacts.get(1).html());
+                    }
                 }
             }
+
+            // hinh anh
+            Elements imageElements = doc.getElementById("myGallery").select("img");
+            List<String> images = new ArrayList<String>();
+            for (Element imageElement : imageElements) {
+                images.add(imageElement.attr("src"));
+            }
+
+            // Get Longitude, Latitude
+            if(doc.getElementById("hddLatitude") != null && doc.getElementById("hddLongtitude") != null) {
+                String latitude = doc.getElementById("hddLatitude").val();
+                String logitude = doc.getElementById("hddLongtitude").val();
+                dto.setLongitude(logitude.trim());
+                dto.setLatitude(latitude.trim());
+            }
+
+            // String ward = doc.getElementById("MainContent_ctlDetailBox_lblWard").text();
+            String district = doc.getElementById("ddlDistrict").text();
+            String city = doc.getElementById("ddlCity").text();
+
+            dto.setAddress(location);
+            // dto.setCityDist(district+','+city);
+            dto.setStreetString(street);
+            dto.setImages(images);
+
+            String content = removeBadChars(detail);
+            dto.setBrief(subStringAtSpacing(Jsoup.parse(content).text(), 220));
+            dto.setDetail(content);
+        }catch (Exception ex){
+            ex.printStackTrace();
+            throw new Exception(ex);
         }
-
-        // hinh anh
-        Elements imageElements = doc.getElementById("myGallery").select("img");
-        List<String> images = new ArrayList<String>();
-        for(Element imageElement: imageElements){
-            images.add(imageElement.attr("src"));
-        }
-
-        // Get Longitude, Latitude
-        String latitude = doc.getElementById("hddLatitude").val();
-        String logitude = doc.getElementById("hddLongtitude").val();
-        dto.setLongitude(logitude.trim());
-        dto.setLatitude(latitude.trim());
-
-        // String ward = doc.getElementById("MainContent_ctlDetailBox_lblWard").text();
-        String district = doc.getElementById("ddlDistrict").text();
-        String city = doc.getElementById("ddlCity").text();
-
-        dto.setAddress(location);
-        // dto.setCityDist(district+','+city);
-        dto.setStreetString(street);
-        dto.setImages(images);
-
-        String content = removeBadChars(detail);
-        dto.setBrief(subStringAtSpacing(Jsoup.parse(content).text(), 220));
-        dto.setDetail(content);
     }
 
     private static String removeBadChars(String s) {

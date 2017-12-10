@@ -70,7 +70,7 @@ public class CategoryManagementSessionBean implements CategoryManagementLocalBea
     public List<CategoryDTO> findAll(Boolean continueLastCrawler) {
         List<CategoryEntity> categoryEntities = null;
         if(continueLastCrawler){
-            categoryEntities = categoryLocalBean.findLastCrawler();
+             categoryEntities = categoryLocalBean.findLastCrawler();
         }
         if(categoryEntities == null || categoryEntities.size() < 1){
             categoryLocalBean.updateCrawlerStatus(Constants.CRAWLER_NOT_YET);

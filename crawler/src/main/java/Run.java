@@ -38,15 +38,14 @@ public class Run {
             // Crawler dothi.net
             // dothiService.doCrawler();
 
-            /*MyThread th1 = new MyThread(batDongSanService);
+            MyThread th1 = new MyThread(batDongSanService);
             th1.start();
             MyThread th2 = new MyThread(muaBanNhaDatService);
             th2.start();
             MyThread th3 = new MyThread(dothiService);
-            th3.start();*/
+            th3.start();
             MyThread th4 = new MyThread(cafeLandService);
             th4.start();
-
 
         }catch (Exception e){
             e.printStackTrace();

@@ -146,84 +146,97 @@ public class CafeLandServiceImpl implements CrawlerService, CafeLandService {
     }
 
     private void updateDetail(String fullUrl, BatDongSanDTO dto) throws Exception{
-        Document doc = Jsoup.connect(fullUrl).userAgent(Constants.userAgent).get();
-        String detail = doc.getElementById("sl_mota").html();
+        try {
+            Document doc = Jsoup.connect(fullUrl).timeout(10000).userAgent(Constants.userAgent).get();
+            String detail = doc.getElementById("sl_mota").html().replace("\n", "<br>");
+            ;
 
-        Elements divDacDiemBatDongSan = doc.select("div.menuchildborder").select("div.lopline");
-        //logger.info("------- DAC DIEM ----------");
-        for(Element dacDiem : divDacDiemBatDongSan){
-            String []attrs = dacDiem.select("label").text().split(":");
-            if(attrs.length == 2){
-                String key = attrs[0].trim();
-                String val = attrs[1].trim();
-                if(key.equalsIgnoreCase("Mã tài sản")){
-                    dto.setCode(val);
-                }else if(key.equalsIgnoreCase("Vị trí")){
-                    dto.setAddress(val);
-                }else if(key.equalsIgnoreCase("Thuộc dự án")){
-                    dto.setBrandString(val);
-                }else if(key.equalsIgnoreCase("Ngày đăng")){
-                    dto.setPostDateStr(val);
-                }else if(key.equalsIgnoreCase("Người liên hệ")){
-                    dto.setContactName(val);
-                }else if(key.equalsIgnoreCase("Địa chỉ")){
-                    dto.setContactAddress(val);
-                }
-            }else if(dacDiem.text().split(":")[0].trim().equalsIgnoreCase("Điện thoại")){
-                String phoneNumber = dacDiem.select("a").attr("onclick").split(",")[1].replace("'","").replace(")","").trim();
-                dto.setContactPhone(phoneNumber);
-            }
-        }
-
-        // ma tin dang, loai tin dang
-        Elements productType =  doc.select("table.table.table-bordered").select("td");
-        for(Element prType : productType){
-            String[] text = prType.text().split(":");
-            if(text.length == 2){
-                String key = text[0].trim();
-                String val = text[1].trim();
-                if(key.equalsIgnoreCase("Chiều ngang trước")){
-                    dto.setWidthSize(val.replace("m", ""));
-                }else if(key.equalsIgnoreCase("Chiều dài")){
-                    dto.setLongSize(val.replace("m", ""));
-                }else if(key.equalsIgnoreCase("Số lầu")){
-                    dto.setFloor(val);
-                }else if(key.equalsIgnoreCase("Phòng ngủ")){
-                    dto.setRoom(val);
-                }else if(key.equalsIgnoreCase("Phòng vệ sinh")){
-                    dto.setToilet(val);
-                }else if(key.equalsIgnoreCase("Chiều ngang")){
-                    dto.setWidthSize(val.replace("m", ""));
-                }else if(key.equalsIgnoreCase("Chiều dài")){
-                    dto.setLongSize(val.replace("m", ""));
-                }else if(key.equalsIgnoreCase("Hướng xây dựng")){
-                    dto.setDirectionString(val);
+            Elements divDacDiemBatDongSan = doc.select("div.menuchildborder").select("div.lopline");
+            //logger.info("------- DAC DIEM ----------");
+            for (Element dacDiem : divDacDiemBatDongSan) {
+                String[] attrs = dacDiem.select("label").text().split(":");
+                if (attrs.length == 2) {
+                    String key = attrs[0].trim();
+                    String val = attrs[1].trim();
+                    if (key.equalsIgnoreCase("Mã tài sản")) {
+                        dto.setCode(val);
+                    } else if (key.equalsIgnoreCase("Vị trí")) {
+                        dto.setAddress(val);
+                    } else if (key.equalsIgnoreCase("Thuộc dự án")) {
+                        dto.setBrandString(val);
+                    } else if (key.equalsIgnoreCase("Ngày đăng")) {
+                        dto.setPostDateStr(val);
+                    } else if (key.equalsIgnoreCase("Người liên hệ")) {
+                        dto.setContactName(val);
+                    } else if (key.equalsIgnoreCase("Địa chỉ")) {
+                        dto.setContactAddress(val);
+                    }
+                } else if (dacDiem.text().split(":")[0].trim().equalsIgnoreCase("Điện thoại")) {
+                    String phoneNumber = dacDiem.select("a").attr("onclick").split(",")[1].replace("'", "").replace(")", "").trim();
+                    dto.setContactPhone(phoneNumber);
                 }
             }
+
+            // ma tin dang, loai tin dang
+            Elements productType = doc.select("table.table.table-bordered").select("td");
+            for (Element prType : productType) {
+                String[] text = prType.text().split(":");
+                if (text.length == 2) {
+                    String key = text[0].trim();
+                    String val = text[1].trim();
+                    if (key.equalsIgnoreCase("Chiều ngang trước")) {
+                        dto.setWidthSize(val.replace("m", ""));
+                    } else if (key.equalsIgnoreCase("Chiều dài")) {
+                        dto.setLongSize(val.replace("m", ""));
+                    } else if (key.equalsIgnoreCase("Số lầu")) {
+                        dto.setFloor(val);
+                    } else if (key.equalsIgnoreCase("Phòng ngủ")) {
+                        dto.setRoom(val);
+                    } else if (key.equalsIgnoreCase("Phòng vệ sinh")) {
+                        dto.setToilet(val);
+                    } else if (key.equalsIgnoreCase("Chiều ngang")) {
+                        dto.setWidthSize(val.replace("m", ""));
+                    } else if (key.equalsIgnoreCase("Chiều dài")) {
+                        dto.setLongSize(val.replace("m", ""));
+                    } else if (key.equalsIgnoreCase("Hướng xây dựng") && !key.equalsIgnoreCase("Không xác định")) {
+                        dto.setDirectionString(val);
+                    }
+                }
+            }
+
+            List<String> images = new ArrayList<String>();
+            if(doc.getElementById("myCarousel") != null) {
+                Elements imageElements = doc.getElementById("myCarousel").select("div.carousel-inner").select("div.item").select("img");
+                for (Element imageElement : imageElements) {
+                    images.add(imageElement.attr("src"));
+                }
+            }
+
+            String googleMapUrl = doc.getElementById("menu1").select("iframe").attr("src");
+            Map<String, String> vals = getQueryMap(googleMapUrl);
+            String[] latLng = vals.get("q").split(",");
+
+            String latitude = latLng[0].trim();
+            String longitude = latLng[1].trim();
+            if(!StringUtils.isNumeric(latLng[0].trim()) || !StringUtils.isNumeric(latLng[1].trim())) {
+                latitude = "0";
+                longitude = "0";
+            }
+
+            String city = doc.getElementById("db_tinhthanh").select("option[selected]").text();
+            String district = doc.getElementById("db_quanhuyen").select("option[selected]").text();
+            String ward = doc.getElementById("db_phuongxa").select("option[selected]").text();
+
+            dto.setCityDist(district + "," + city);
+            dto.setWardString(ward);
+            dto.setLongitude(longitude);
+            dto.setLatitude(latitude);
+            dto.setImages(images);
+            dto.setDetail(detail);
+        }catch (Exception ex){
+            ex.printStackTrace();
+            throw new Exception(ex);
         }
-
-        Elements imageElements = doc.getElementById("myCarousel").select("div.carousel-inner").select("div.item").select("img");
-        List<String> images = new ArrayList<String>();
-        for(Element imageElement: imageElements){
-            images.add(imageElement.attr("src"));
-        }
-
-        String googleMapUrl = doc.getElementById("menu1").select("iframe").attr("src");
-        Map<String, String> vals = getQueryMap(googleMapUrl);
-        String[] latLng = vals.get("q").split(",");
-        String latitude = latLng[0].trim();
-        String longitude = latLng[1].trim();
-
-        String city = doc.getElementById("db_tinhthanh").select("option[selected]").text();
-        String district = doc.getElementById("db_quanhuyen").select("option[selected]").text();
-        String ward = doc.getElementById("db_phuongxa").select("option[selected]").text();
-
-        dto.setCityDist(district+","+city);
-        dto.setWardString(ward);
-        dto.setLongitude(longitude);
-        dto.setLatitude(latitude);
-        dto.setImages(images);
-        dto.setDetail(detail);
     }
 
     public static Map<String, String> getQueryMap(String query)

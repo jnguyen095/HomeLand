@@ -1,6 +1,7 @@
 package com.test.domain;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
 
 /**
  * Created with IntelliJ IDEA.
@@ -22,6 +23,7 @@ public class BrandEntity {
     private String area;
     private String price;
     private String detail;
+    private Timestamp modifiedDate;
 
 
     @javax.persistence.Column(name = "BrandID")
@@ -123,5 +125,15 @@ public class BrandEntity {
 
     public void setDetail(String detail) {
         this.detail = detail;
+    }
+
+    @javax.persistence.Column(name = "ModifiedDate")
+    @Basic
+    public Timestamp getModifiedDate() {
+        return modifiedDate;
+    }
+
+    public void setModifiedDate(Timestamp modifiedDate) {
+        this.modifiedDate = modifiedDate;
     }
 }

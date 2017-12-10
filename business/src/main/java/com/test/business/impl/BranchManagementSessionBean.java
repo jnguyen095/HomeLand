@@ -10,6 +10,7 @@ import com.test.utils.DozerSingletonMapper;
 import javax.ejb.DuplicateKeyException;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,6 +38,7 @@ public class BranchManagementSessionBean implements BranchManagementRemoteBean, 
     @Override
     public void update(BrandDTO dto) throws DuplicateKeyException {
         BrandEntity entity = DozerSingletonMapper.getInstance().map(dto, BrandEntity.class);
+        entity.setModifiedDate(new Timestamp(System.currentTimeMillis()));
         brandLocalBean.update(entity);
     }
 }
