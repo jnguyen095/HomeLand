@@ -13,8 +13,10 @@ import java.util.List;
  * Time: 6:00 PM
  */
 @Remote
-public interface BranchManagementRemoteBean {
+public interface BrandManagementRemoteBean {
     List<BrandDTO> findAll();
 
     void update(BrandDTO dto) throws DuplicateKeyException;
+
+    void saveOrUpdate(BrandDTO dto) throws DuplicateKeyException;
 }

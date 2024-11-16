@@ -86,6 +86,7 @@ CREATE TABLE Brand
 	PRIMARY KEY(BrandID),
 	INDEX (BrandName)
 )DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+alter table brand add column Source VARCHAR(255);
 
 DROP TABLE IF EXISTS Direction;
 CREATE TABLE Direction

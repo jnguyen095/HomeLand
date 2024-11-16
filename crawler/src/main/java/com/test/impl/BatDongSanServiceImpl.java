@@ -11,18 +11,12 @@ import org.apache.commons.lang.math.NumberUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.nodes.Node;
-import org.jsoup.nodes.TextNode;
 import org.jsoup.select.Elements;
 
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Logger;
 
 /**
@@ -40,10 +34,10 @@ public class BatDongSanServiceImpl implements CrawlerService, BatDongSanService 
     private CategoryManagementRemoteBean categoryManagementBean;
     private NewsManagementRemoteBean newsManagementBean;
     private SampleHouseManagementRemoteBean sampleHouseManagementBean;
-    private BranchManagementRemoteBean branchManagementRemoteBean;
+    private BrandManagementRemoteBean brandManagementRemoteBean;
 
-    public void setBranchManagementRemoteBean(BranchManagementRemoteBean branchManagementRemoteBean) {
-        this.branchManagementRemoteBean = branchManagementRemoteBean;
+    public void setBrandManagementRemoteBean(BrandManagementRemoteBean brandManagementRemoteBean) {
+        this.brandManagementRemoteBean = brandManagementRemoteBean;
     }
 
     public void setSampleHouseManagementBean(SampleHouseManagementRemoteBean sampleHouseManagementBean) {
@@ -105,8 +99,9 @@ public class BatDongSanServiceImpl implements CrawlerService, BatDongSanService 
     public void updateMainCategory() {
         List<CategoryTreeDTO> trees = new ArrayList<CategoryTreeDTO>();
         try{
-            Document doc = Jsoup.connect(crawlerUrl()).userAgent(Constants.userAgent).get();
-            Elements elements = doc.getElementsByClass("dropdown-navigative-menu").select("li.lv0");
+            System.setProperty("https.protocols", "TLSv1,TLSv1.1,TLSv1.2");
+            Document doc = Jsoup.connect(crawlerUrl()).userAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.152 Safari/537.36").ignoreHttpErrors(true).get();
+            Elements elements = doc.getElementsByClass("re__dropdown-navigative-menu").select("li.lv0");
 
             if(elements != null && elements.size() > 0){
                 for(Element element : elements){
@@ -140,6 +135,7 @@ public class BatDongSanServiceImpl implements CrawlerService, BatDongSanService 
                 }
             }
         }catch (Exception e){
+            e.printStackTrace();
             logger.info(e.getMessage());
         }
         if(trees != null){
@@ -148,12 +144,19 @@ public class BatDongSanServiceImpl implements CrawlerService, BatDongSanService 
     }
 
     @Override
-    public void crawlerBranch() {
-        List<BrandDTO> branchs = branchManagementRemoteBean.findAll();
+    public void crawlerBrand() {
+        List<BrandDTO> branchs = brandManagementRemoteBean.findAll();
         for(BrandDTO dto : branchs){
-            String url = "https://batdongsan.com.vn/phan-muc-cac-du-an-bds?k=" + dto.getBrandName().replace(" ", "+");
+            String url = "https://batdongsan.com.vn/du-an-bat-dong-san"; // "https://batdongsan.com.vn/du-an-bat-dong-san?k=" + dto.getBrandName().replace(" ", "-");
             try{
-                Document doc = Jsoup.connect(url).userAgent(Constants.userAgent).get();
+                System.setProperty("https.protocols", "TLSv1,TLSv1.1,TLSv1.2");
+                Map<String, String> cookies = new HashMap<>();
+                cookies.put("ACCOUNT_CHOOSER", "AFx_qI4nTXPR9RPa1Fc2OKuohpi6wdsK8JE7FqsAvP0zQ-FEpNLNv__h3JKmRl3miCn_1Qvewj6ySrlASy3V3QopDSmbFPtNplazUULVLENLDO8UlruLSfQ6ERgbq0uHajEYHX0-1wwN0ps8CQIhOhr8H7v0IbBEOw5RHozCr-orMjzdajSglhw42TTT5Ca2UTuppPoWaMeESR_DbQiScYBRx4aWf7yzw9s1puMhMdZB7c2Cy7qzaEfziG5gTHybpADym5dwzdyTPm9WHvH_7B7S1nfCmbiYZh_sl0uuELtt_zr96i3i9DUcb9ednD5_bHbUcICpvtu5H6Lyz07ECyjEx_ErzxBsPd29tTT88dXxOlqjokJUwX3ZB_CEogDnQovr-A3K08Nq4eD4_AGGEVCNQzB2uK9N2JcRICbcn4NACegJBX-9jD_kx_pK17Qf3_y32u-OsPrd0A9ZS5fP4dZ71ZVVVGdX1Yo_O9s58ygnDIHMJus4Snc5X1q464IyT-ctCvG6MFm7dNqpBpHeVqPzS5vA4CX26eLx218zWxfrmw0ViNFDoWs");
+                cookies.put("APISID", "Xp1IHSyPg7Qi1BpP/ASxv798agwp94owpJ");
+                cookies.put(".AspNetCore.Antiforgery.VyLW6ORzMgk", "CfDJ8O0vQA-L_iRMnfYd2x797oZklmGcpT77ouQKnQeUGnhFlaqmn3TWaTJdhysw1NQeIxsUmU-REudNEOFDhaEuj2fAhnTPJ0vdxs-2VlVQ6MdBaXHJf9HEs0rQMfTZhPJa0gNGGp5h-ca2rwyZHzhZtJ8");
+                cookies.put("BDS.UMS.Cookie", "CfDJ8JnPa_lzET9CkeNrvw8JOGoLbOWstkLXB59BMT2ilYI9nHGv3J5Aw8__FCFKXKS13Sbw1iLNMfqFvKjZV2GFGCQYcCDEZE8hYXcRpIn3DMQ20C-f5PEL0yoZAu4Zd7xFgdIRaHa8yviAO3t53rEeM8WXZApJM2zv3eVeKU9mepowGfpWC9O-Bu_kk5FHuNNXbdh1B3PTcyrp6mxA7g0HvTVlbEGrQzQpd3s-riOvfDxIxGidUfEyTl4SIQBsf2LpeU-yiIwpy2JWoPyY9Tb8Yl9X_xbxP4dFKOw-9axn1sl4YBlTxq0ctD0zFnn6fRkxyAGBn5tftAONe8mBqgQmsQ0N73gmbTkEqkWXctJO2uhUPq3NHwOg9Q0b0voGCkXCGuIbh61WNJ8KMzw29qwhDkbxlrB2oW5CSlFLtZwBcycIgL092UyaJnc0PXf5M5W0JQu1HuyW4rKR-QWWWvleehCveVSEZPY1F-8OB4XyIAi5uQrXnGzZHZ7w8qOQi94jXoL-Cr9HQkChU50aT9KUJkvkYtztod_86VZ9aRJV1XNFsl44Kv57Nqv3hajdt-4ZSptAXRZYpvmEiG-KXlxf3_UxgLeHLXSo4BwGr_5slrnbUKZn9h50f7sjMvKXSis_DZWGLClpXNhDdp0KSwI1gBkEOSZKKqB2gBJnvcStmn1b");
+                Document doc = Jsoup.connect(url).cookies(cookies).timeout(3000).userAgent(Constants.userAgent).get();
+
                 Elements elements = doc.getElementsByClass("list-view").select("li");
                 for(int i = 0; i < elements.size(); i++){
                     Element element = elements.get(i);
@@ -178,7 +181,7 @@ public class BatDongSanServiceImpl implements CrawlerService, BatDongSanService 
                     dto.setProcess(progress);
                     dto.setDetail(detail);
 
-                    branchManagementRemoteBean.update(dto);
+                    brandManagementRemoteBean.update(dto);
                 }
             }catch (Exception e){
                 logger.info("------ error: " + url + " ------");
@@ -242,6 +245,7 @@ public class BatDongSanServiceImpl implements CrawlerService, BatDongSanService 
     private List<SampleHouseDTO> gatherSampleHouse(String url, SimpleDateFormat df){
         List<SampleHouseDTO> results = new ArrayList<>();
         try{
+            System.setProperty("https.protocols", "TLSv1,TLSv1.1,TLSv1.2");
             Document doc = Jsoup.connect(url).userAgent(Constants.userAgent).get();
             Elements news = doc.getElementsByClass("tintuc-row1");
 
@@ -281,6 +285,7 @@ public class BatDongSanServiceImpl implements CrawlerService, BatDongSanService 
     private List<NewsDTO> gatherNews(String url, SimpleDateFormat df){
         List<NewsDTO> results = new ArrayList<>();
         try{
+            System.setProperty("https.protocols", "TLSv1,TLSv1.1,TLSv1.2");
             Document doc = Jsoup.connect(url).userAgent(Constants.userAgent).get();
             Elements news = doc.getElementsByClass("tintuc-row1");
 
@@ -312,6 +317,7 @@ public class BatDongSanServiceImpl implements CrawlerService, BatDongSanService 
                 results.add(dto);
             }
         }catch (Exception e){
+            e.printStackTrace();
             logger.info(e.getMessage());
         }
         return results;
@@ -320,8 +326,9 @@ public class BatDongSanServiceImpl implements CrawlerService, BatDongSanService 
     private List<BatDongSanDTO> gatherInfo(String url){
         List<BatDongSanDTO> items = new ArrayList<BatDongSanDTO>();
         try{
-            Document doc = Jsoup.connect(url).userAgent(Constants.userAgent).get();
-            Elements searchProductItems = doc.getElementsByClass("search-productItem");
+            System.setProperty("https.protocols", "TLSv1,TLSv1.1,TLSv1.2");
+            Document doc = Jsoup.connect(url).ignoreHttpErrors(true).userAgent(Constants.userAgent).get();
+            Elements searchProductItems = doc.getElementsByClass("product-item");
 
             for (Element searchProductItem : searchProductItems) {
                 BatDongSanDTO batDongSanDTO = getBrief(searchProductItem);
@@ -338,6 +345,7 @@ public class BatDongSanServiceImpl implements CrawlerService, BatDongSanService 
                 items.add(batDongSanDTO);
             }
         }catch (Exception e){
+            e.printStackTrace();
             logger.info(e.getMessage());
         }
         return items;
@@ -404,6 +412,7 @@ public class BatDongSanServiceImpl implements CrawlerService, BatDongSanService 
     }
 
     private void updateDetail(String fullUrl, BatDongSanDTO dto) throws Exception{
+        System.setProperty("https.protocols", "TLSv1,TLSv1.1,TLSv1.2");
         Document doc = Jsoup.connect(fullUrl).userAgent(Constants.userAgent).get();
         String detail = doc.getElementById("product-detail").select("div.pm-desc").html();
 
@@ -486,4 +495,6 @@ public class BatDongSanServiceImpl implements CrawlerService, BatDongSanService 
         dto.setImages(images);
         dto.setDetail(detail);
     }
+
+
 }

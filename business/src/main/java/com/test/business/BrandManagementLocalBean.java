@@ -10,5 +10,5 @@ import javax.ejb.Stateless;
  * Time: 5:57 PM
  */
 @Local
-public interface BranchManagementLocalBean {
+public interface BrandManagementLocalBean {
 }

@@ -10,6 +10,7 @@ import com.test.business.SampleHouseManagementRemoteBean;
 import com.test.dto.BatDongSanDTO;
 import com.test.dto.CategoryDTO;
 import com.test.dto.NewsDTO;
+import com.test.dto.SampleHouseDTO;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.jsoup.Jsoup;
@@ -82,7 +83,7 @@ public class DothiServiceImpl implements CrawlerService, DothiService {
                     String[] strs = getUrlandExtentionOfUrl(orgUrl);
                     String extention = strs[1];
                     String bUrl = strs[0];
-                    String url = bUrl + (i > 1 ? "/page-" + i + "." + extention : "." + extention);
+                    String url = bUrl + (i > 1 ? "/p" + i + "." + extention : "." + extention);
                     logger.info("--- Gathering: " + url);
                     List<BatDongSanDTO> items = gatherInfo(url);
                     logger.info("--- Processing list: " + items.size());
@@ -108,10 +109,10 @@ public class DothiServiceImpl implements CrawlerService, DothiService {
     public void crawlerNews() {
         String newUrl = "https://dothi.net/tin-thi-truong.htm";
 
-        /*try {
+        try {
             SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
-            for(int i = 0; i < crawlerDeep(); i++) {
-                String url = newUrl + (i > 1 ? "/?page=" + i : "");
+            for(int i = 1; i < crawlerDeep(); i++) {
+                String url = newUrl + (i > 1 ? "/p" + i + ".htm" : "");
                 logger.info("--- Gathering: " + url);
                 List<NewsDTO> items = gatherNews(url, df);
                 logger.info("--- Processing list: " + items.size());
@@ -127,12 +128,78 @@ public class DothiServiceImpl implements CrawlerService, DothiService {
 
         }catch (Exception e){
             logger.info(e.getMessage());
-        }*/
+        }
     }
 
     @Override
     public void crawlerSampleHouse() {
+        String newUrl = "https://dothi.net/nha-dep.htm";
 
+        try {
+            SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy hh:mm");
+            for(int i = 1; i < crawlerDeep(); i++) {
+                String url = newUrl + (i > 1 ? "/p" + i + ".htm" : "");
+                logger.info("--- Gathering: " + url);
+                List<SampleHouseDTO> items = gatherSampleHouse(url, df);
+                logger.info("--- Processing list: " + items.size());
+                try {
+                    Integer[] saveInfos = sampleHouseManagementBean.saveItems(items);
+                    logger.info("--- Result ----");
+                    logger.info("--->> [saved: " + saveInfos[0] + ", exists: " + saveInfos[1] + ", error: " + saveInfos[2] + "]");
+                }catch (Exception e){
+                    logger.info(e.getMessage());
+                    continue;
+                }
+            }
+
+        }catch (Exception e){
+            logger.info(e.getMessage());
+        }
+    }
+
+    private List<SampleHouseDTO> gatherSampleHouse(String url, SimpleDateFormat df){
+        List<SampleHouseDTO> results = new ArrayList<>();
+        try{
+            System.setProperty("https.protocols", "TLSv1,TLSv1.1,TLSv1.2");
+            Document doc = Jsoup.connect(url).userAgent(Constants.userAgent).get();
+            Elements news = doc.getElementsByClass("news-list").select("li");
+
+            for(Element newElement : news){
+                String dateTime = newElement.getElementsByClass("nd-time").text().trim();
+                String thumb = newElement.getElementsByClass("liimg").select("img").attr("src");
+                String detailUrl = newElement.getElementsByClass("liimg").select("a").attr("href").trim();
+                String title = newElement.getElementsByClass("litext").select("a").text().trim();
+                String brief = newElement.getElementsByClass("litext").select("p").text().trim();
+                if (!detailUrl.contains("http")) {
+                    detailUrl = crawlerUrl() + detailUrl;
+                }
+                Document detailDoc = Jsoup.connect(detailUrl).userAgent(Constants.userAgent).get();
+                StringBuffer strb = new StringBuffer("<div class='summary'><h2>").append(brief ).append("</h2></div>");
+                strb.append(detailDoc.getElementsByClass("nd-content").html());
+                String detail =  strb.toString();
+                String source = detailDoc.getElementsByTag("p").select(".pull-right").html();
+                Date createdDate = df.parse(dateTime);
+
+                SampleHouseDTO dto = new SampleHouseDTO();
+                dto.setTitle(title);
+                dto.setBrief(brief);
+                if (!thumb.contains("http")) {
+                    thumb = crawlerUrl() + thumb;
+                }
+                dto.setThumb(thumb);
+                dto.setDescription(detail);
+                dto.setView(0);
+                dto.setStatus(Constants.ACTIVE);
+                dto.setSource(source);
+                dto.setCreatedDate(new Timestamp(createdDate.getTime()));
+                dto.setUrl(detailUrl);
+
+                results.add(dto);
+            }
+        }catch (Exception e){
+            logger.info(e.getMessage());
+        }
+        return results;
     }
 
     private String[] getUrlandExtentionOfUrl(String url){
@@ -149,20 +216,23 @@ public class DothiServiceImpl implements CrawlerService, DothiService {
     private List<NewsDTO> gatherNews(String url, SimpleDateFormat df){
         List<NewsDTO> results = new ArrayList<>();
         try{
+            System.setProperty("https.protocols", "TLSv1,TLSv1.1,TLSv1.2");
             Document doc = Jsoup.connect(url).userAgent(Constants.userAgent).get();
-            Elements news = doc.getElementsByClass("_CategoeriesListingItem");
+            Elements news = doc.getElementsByClass("news-list").select("li");
 
             for(Element newElement : news){
-                String dateTime = newElement.getElementsByClass("_date").text().trim();
-                String thumb = newElement.getElementsByClass("img-thumbnail").attr("src");
-                String detailUrl = newElement.getElementsByClass("_ViewDetailCategories").attr("href");
-                String title = newElement.getElementsByClass("_title").text();
-                String brief = newElement.getElementsByClass("_des").text();
+                String dateTime = newElement.getElementsByClass("nd-time").text().trim();
+                String thumb = newElement.getElementsByClass("liimg").select("img").attr("src");
+                String detailUrl = newElement.getElementsByClass("liimg").select("a").attr("href").trim();
+                String title = newElement.getElementsByClass("litext").select("a").text().trim();
+                String brief = newElement.getElementsByClass("litext").select("p").text().trim();
                 if (!detailUrl.contains("http")) {
                     detailUrl = crawlerUrl() + detailUrl;
                 }
                 Document detailDoc = Jsoup.connect(detailUrl).userAgent(Constants.userAgent).get();
-                String detail = "<div class='summary'><h2>" + brief + "</h2></div>" + detailDoc.getElementsByClass("__DesFull").html();
+                StringBuffer strb = new StringBuffer("<div class='summary'><h2>").append(brief ).append("</h2></div>");
+                strb.append(detailDoc.getElementsByClass("nd-content").html());
+                String detail =  strb.toString();
                 String source = detailDoc.getElementsByTag("p").select(".pull-right").html();
                 Date createdDate = df.parse(dateTime);
 
@@ -192,6 +262,7 @@ public class DothiServiceImpl implements CrawlerService, DothiService {
         List<BatDongSanDTO> items = new ArrayList<BatDongSanDTO>();
         try{
            // System.setProperty("javax.net.ssl.trustStore", "D:\\dothinet.crt");
+            System.setProperty("https.protocols", "TLSv1,TLSv1.1,TLSv1.2");
             Document doc = Jsoup.connect(url).timeout(10000).userAgent(Constants.userAgent).get();
             Elements searchProductItems = doc.getElementsByClass("listProduct").select("li");
 

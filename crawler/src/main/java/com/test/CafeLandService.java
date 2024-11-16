@@ -10,4 +10,5 @@ import javax.ejb.Remote;
  */
 @Remote
 public interface CafeLandService {
+    void crawlerBrand();
 }

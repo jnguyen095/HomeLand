@@ -165,7 +165,7 @@ public class ProductManagementSessionBean implements ProductManagementRemoteBean
         }
 
 
-        BrandEntity brandEntity = saveOrLoadBrand(batDongSanDTO.getBrandString());
+        BrandEntity brandEntity = saveOrLoadBrand(batDongSanDTO.getBrandString(), batDongSanDTO.getSource());
         if(brandEntity != null){
             productEntity.setBrand(brandEntity);
         }
@@ -217,7 +217,7 @@ public class ProductManagementSessionBean implements ProductManagementRemoteBean
         return unitEntity;
     }
 
-    private BrandEntity saveOrLoadBrand(String brandString){
+    private BrandEntity saveOrLoadBrand(String brandString, String source){
         BrandEntity brandEntity = null;
         if(StringUtils.isNotBlank(brandString)){
             try{

@@ -24,7 +24,7 @@
 
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <properties>
-            <property name="hibernate.default_schema" value="tinf975d_tindatdai" />
+            <property name="hibernate.default_schema" value="nhadatan671f_db" />
             <property name="hibernate.hbm2ddl.auto" value="validate"/>
             <property name="hibernate.show_sql" value="true"/>
             <property name="hibernate.default_batch_fetch_size" value="20"/>

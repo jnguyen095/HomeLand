@@ -34,6 +34,7 @@ public class MyThread implements Runnable, CrawlerService {
             this.crawlerSampleHouse();
         }catch (Exception ex){
             logger.info(ex.getMessage());
+            ex.getStackTrace();
         }
     }
 

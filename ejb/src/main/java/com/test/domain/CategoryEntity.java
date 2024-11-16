@@ -20,6 +20,7 @@ public class CategoryEntity {
     private String name;
     private String batdongsanUrl;
     private String muabannhadatUrl;
+    private String batDongSanOnlineUrl;
     private String dothiUrl;
     private String cafelandUrl;
     private Integer active;
@@ -114,5 +115,15 @@ public class CategoryEntity {
 
     public void setCafelandUrl(String cafelandUrl) {
         this.cafelandUrl = cafelandUrl;
+    }
+
+    @javax.persistence.Column(name = "BatDongSanOnlineUrl")
+    @javax.persistence.Basic
+    public String getBatDongSanOnlineUrl() {
+        return batDongSanOnlineUrl;
+    }
+
+    public void setBatDongSanOnlineUrl(String batDongSanOnlineUrl) {
+        this.batDongSanOnlineUrl = batDongSanOnlineUrl;
     }
 }

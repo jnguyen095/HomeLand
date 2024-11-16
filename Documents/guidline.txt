@@ -69,9 +69,18 @@
         Added user 'ejb' with roles to file '/jboss-as-7.1.1.Final/standalone/configuration/application-roles.properties'
         Added user 'ejb' with roles to file '/jboss-as-7.1.1.Final/domain/configuration/application-roles.properties'
     + https://docs.jboss.org/author/display/AS71/EJB+invocations+from+a+remote+server+instance
+    + https://docs.jboss.org/author/display/AS71/EJB%20invocations%20from%20a%20remote%20server%20instance.html
     + $JBOSS-HOME/bin/add-user.sh
     + sua lai trong file jobss-ejb-client.properties
 7. Tao mot request len https bi loi: ko certificate duoc:
     - Len site do bang firefox: click len o khoa mau xanh -> Security -> View Certificated -> download ve duoc file: dothinet.crt
     - keytool -import -file D:\dothinet.crt -storepass changeit -keystore "C:\Program Files\Java\jdk1.7.0_80\jre\lib\security\cacerts" -alias DoThi
     - Chay lai la duoc
+    - Chay cmd bang Administrator
+
+8. PermGen space
+    -XX:MaxPermSize=128m
+
+9. PHP bị extension_loaded('gd') --> vào php.int bỏ dấu ; ở trước
+
+10. Export mysql: D:\xampp\mysql\bin>mysqldump -u root -h localhost -p tinf975d_tindatdai > d:/tindatdai.sql

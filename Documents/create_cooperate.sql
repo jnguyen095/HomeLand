@@ -45,3 +45,16 @@ CREATE TABLE Cooperate
 	FOREIGN KEY(WardID) REFERENCES Ward(WardID) ON UPDATE CASCADE ON DELETE RESTRICT,
 	FOREIGN KEY(TagID) REFERENCES Tag(TagID) ON UPDATE CASCADE ON DELETE RESTRICT
 )DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+
+
+alter table cooperate drop column brief;
+alter table cooperate drop column ExpireDate;
+alter table cooperate drop column View;
+alter table cooperate drop column Thumb;
+alter table cooperate add column BrokerID INT REFERENCES us3r(Us3rID);
+alter table cooperate add column Attachment1 VARCHAR(255);
+alter table cooperate add column Attachment2 VARCHAR(255);
+alter table cooperate add column Attachment3 VARCHAR(255);
+alter table cooperate add column Attachment4 VARCHAR(255);
+alter table cooperate add column Attachment5 VARCHAR(255);
+alter table cooperate add column Demand VARCHAR(255) NOT NULL ;

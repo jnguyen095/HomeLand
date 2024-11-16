@@ -16,6 +16,7 @@ public class CategoryDTO implements Serializable{
     private String muabannhadatUrl;
     private String dothiUrl;
     private String cafelandUrl;
+    private String batDongSanOnlineUrl;
     private Integer active;
     private CategoryDTO parent;
     private Integer crawled;
@@ -90,5 +91,13 @@ public class CategoryDTO implements Serializable{
 
     public void setCafelandUrl(String cafelandUrl) {
         this.cafelandUrl = cafelandUrl;
+    }
+
+    public String getBatDongSanOnlineUrl() {
+        return batDongSanOnlineUrl;
+    }
+
+    public void setBatDongSanOnlineUrl(String batDongSanOnlineUrl) {
+        this.batDongSanOnlineUrl = batDongSanOnlineUrl;
     }
 }
