@@ -37,18 +37,17 @@ public class UserValidator extends ApplicationObjectSupport implements Validator
     }
 
     private void checkUniqueCode(UserCommand command, Errors errors) {
-        String userName = command.getPojo().getUserName();
+        String phoneNumber = command.getPojo().getPhone();
         Integer id = command.getPojo().getUserId();
-        if(StringUtils.isNotBlank(userName)){
-            Boolean isDuplicated = userManagementLocalBean.isDuplicated(userName, id);
+        if(StringUtils.isNotBlank(phoneNumber)){
+            Boolean isDuplicated = userManagementLocalBean.isDuplicated(phoneNumber, id);
             if(isDuplicated){
-                errors.rejectValue("pojo.userName", "duplicated.message", new Object[]{userName}, null);
+                errors.rejectValue("pojo.phone", "duplicated.message", new Object[]{phoneNumber}, null);
             }
         }
     }
 
     private void validateRequired(UserCommand command, Errors errors) {
-        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "pojo.userName", "validator.required");
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "pojo.email", "validator.required");
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "pojo.password", "validator.required");
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "pojo.phone", "validator.required");

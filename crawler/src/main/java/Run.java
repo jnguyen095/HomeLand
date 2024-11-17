@@ -56,9 +56,9 @@ public class Run {
             MyThread th3 = new MyThread(dothiService);
             th3.start();
             MyThread th4 = new MyThread(cafeLandService);
-            th4.start();/*
+            th4.start();
             MyThread th5 = new MyThread(batDongSanOnlineService);
-            th5.start();*/
+            th5.start();
 
         }catch (Exception e){
             e.printStackTrace();

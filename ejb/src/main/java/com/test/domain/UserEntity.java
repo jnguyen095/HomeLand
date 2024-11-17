@@ -15,7 +15,6 @@ import java.sql.Timestamp;
 public class UserEntity {
     private Integer userId;
     private UserGroupEntity userGroup;
-    private String userName;
     private String password;
     private String email;
     private String phone;
@@ -42,16 +41,6 @@ public class UserEntity {
 
     public void setUserGroup(UserGroupEntity userGroup) {
         this.userGroup = userGroup;
-    }
-
-    @javax.persistence.Column(name = "UserName")
-    @Basic
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
     }
 
     @javax.persistence.Column(name = "Password")
