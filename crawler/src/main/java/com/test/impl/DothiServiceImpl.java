@@ -323,7 +323,10 @@ public class DothiServiceImpl implements CrawlerService, DothiService {
             dto.setArea(getAreaFromString(areaString));
 
             String location = doc.getElementsByClass("pd-location").removeClass("spanlocation").text();
-            String street = doc.getElementsByClass("pd-location").get(0).children().get(1).text().split("tại")[1].trim();
+            String street = "";
+            try {
+                street = doc.getElementsByClass("pd-location").get(0).children().get(1).text().split("tại")[1].trim();
+            }catch (Exception e){}
 
             // dac diem
             Element tableDacDiem = doc.getElementById("tbl1");

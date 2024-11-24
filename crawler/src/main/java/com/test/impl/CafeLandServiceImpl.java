@@ -209,23 +209,36 @@ public class CafeLandServiceImpl implements CrawlerService, CafeLandService {
                 images.add(imageElement.attr("data-src"));
             }
 
-
-            Element mapElm = doc.getElementsByClass("frame-map").get(0);
             String latitude = "0";
             String longitude = "0";
-            if(mapElm != null) {
-                String googleMapUrl = mapElm.select("iframe").attr("src");
-                Map<String, String> vals = getQueryMap(googleMapUrl);
-                String[] latLng = vals.get("q").split(",");
+            try {
+                Element mapElm = doc.getElementsByClass("frame-map").get(0);
+                if (mapElm != null) {
+                    String googleMapUrl = mapElm.select("iframe").attr("src");
+                    Map<String, String> vals = getQueryMap(googleMapUrl);
+                    String[] latLng = vals.get("q").split(",");
 
-                latitude = latLng[0].trim();
-                longitude = latLng[1].trim();
+                    latitude = latLng[0].trim();
+                    longitude = latLng[1].trim();
+                }
+            }catch (Exception e){
+                e.printStackTrace();
             }
 
-            String[] location = doc.getElementsByClass("infor").get(0).getAllElements().get(2).text().replace(" Lưu tin", "").split(",");
-            String city = location[2].trim();
-            String district = location[1].trim();
-            String ward = location[0].trim();
+            String city = "";
+            String district = "";
+            String ward = "";
+            try {
+                String[] location = doc.getElementsByClass("infor").get(0).getAllElements().get(2).text().replace(" Lưu tin", "").split(",");
+                if (location.length == 3) {
+                    city = location[2].trim();
+                    district = location[1].trim();
+                    ward = location[0].trim();
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+
 
             String cityDistr = StringUtils.isNotBlank(district) ? district + ", " + city : city;
             dto.setCityDist(cityDistr);
